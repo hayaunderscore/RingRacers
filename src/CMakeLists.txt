@@ -609,6 +609,9 @@ endif()
 add_subdirectory(hud)
 add_subdirectory(modp_b64)
 
+# HEP2 specific
+add_subdirectory(hep2)
+
 # strip debug symbols into separate file when using gcc.
 # to be consistent with Makefile, don't generate for OS X.
 if((CMAKE_COMPILER_IS_GNUCC) AND NOT ("${CMAKE_SYSTEM_NAME}" MATCHES Darwin))

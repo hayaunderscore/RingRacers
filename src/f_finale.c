@@ -1736,12 +1736,13 @@ void F_VersionDrawer(void)
 		}
 
 #else // Regular build
-		addtext(trans, va("%s", VERSIONSTRING));
+		// Shill :)
+		addtext(trans, va("HEP2 v2.0 (%s)", VERSIONSTRING));
 #endif
 
 		if (compuncommitted)
 		{
-			addtext(V_REDMAP|V_STRINGDANCE, "! UNCOMMITTED CHANGES !");
+			addtext(V_REDMAP|V_STRINGDANCE, va("! %s: UNCOMMITTED CHANGES !", D_GetFancyBranchName()));
 		}
 	}
 #undef addtext
