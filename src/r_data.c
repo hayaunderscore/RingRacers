@@ -31,10 +31,6 @@
 #include "byteptr.h"
 #include "dehacked.h"
 
-#ifdef HWRENDER
-#include "hardware/hw_glob.h" // HWR_ClearLightTables
-#endif
-
 // DRRR
 #include "k_brightmap.h"
 
@@ -352,9 +348,6 @@ void R_ClearColormaps(void)
 {
 	// Purged by PU_LEVEL, just overwrite the pointer
 	extra_colormaps = R_CreateDefaultColormap(true);
-#ifdef HWRENDER
-	HWR_ClearLightTables();
-#endif
 }
 
 //

@@ -1752,8 +1752,6 @@ void VID_StartupOpenGL(void)
 
 		*(void**)&HWD.pfnSetShaderInfo    = hwSym("SetShaderInfo",NULL);
 		*(void**)&HWD.pfnSetPaletteLookup = hwSym("SetPaletteLookup",NULL);
-		*(void**)&HWD.pfnCreateLightTable = hwSym("CreateLightTable",NULL);
-		*(void**)&HWD.pfnClearLightTables = hwSym("ClearLightTables",NULL);
 		*(void**)&HWD.pfnSetScreenPalette = hwSym("SetScreenPalette",NULL);
 		glstartup = true;
 	}
