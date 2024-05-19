@@ -932,7 +932,7 @@ consvar_t cv_renderhitbox = PlayerCheat("renderhitbox", "Off").values(renderhitb
 
 consvar_t cv_bighead = Player("bighead", "Off").dont_save().values(CV_OnOff).flags(CV_NOSHOWHELP).description("Works out at the library");
 consvar_t cv_shittysigns = Player("shittysigns", "Off").dont_save().values(CV_OnOff).flags(CV_NOSHOWHELP).description("It's better because it's worse");
-consvar_t cv_tastelesstaunts = Player("tastelesstaunts", "Off").dont_save().values(CV_OnOff).flags(CV_NOSHOWHELP).description("Universally hated in dev");
+consvar_t cv_tastelesstaunts = Player("tastelesstaunts", "Off").values(CV_OnOff).description("Universally hated in dev");
 
 //
 // Dummy variables used solely in the menu system.
