@@ -475,6 +475,8 @@ void D_RegisterServerCommands(void)
 	COM_AddDebugCommand("crypt", Command_Crypt_f);
 #endif
 
+	COM_AddDebugCommand("passwd", Command_Passwd_f);
+
 	K_RegisterMidVoteCVars();
 
 	{

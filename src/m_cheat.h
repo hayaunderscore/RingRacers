@@ -92,6 +92,7 @@ void Command_GotoSkybox_f(void);
 #ifdef DEVELOP
 void Command_Crypt_f(void);
 #endif
+void Command_Passwd_f(void);
 #ifdef _DEBUG
 void Command_CauseCfail_f(void);
 #endif

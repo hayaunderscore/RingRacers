@@ -1947,7 +1947,9 @@ void D_SRB2Main(void)
 				grandprixinfo.gamespeed = KARTSPEED_NORMAL;
 				grandprixinfo.masterbots = false;
 
-				grandprixinfo.gp = true;
+				// Allow to test without bots.
+				if (!M_CheckParm("-match"))
+					grandprixinfo.gp = true;
 				grandprixinfo.cup = NULL;
 				grandprixinfo.wonround = false;
 
