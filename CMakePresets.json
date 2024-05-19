@@ -23,8 +23,8 @@
 			"name": "__release",
 			"hidden": true,
 			"cacheVariables": {
-				"CMAKE_C_FLAGS_RELWITHDEBINFO": "-Ofast -g -DNDEBUG",
-				"CMAKE_CXX_FLAGS_RELWITHDEBINFO": "-Ofast -g -DNDEBUG",
+				"CMAKE_C_FLAGS_RELWITHDEBINFO": "-O3 -g -DNDEBUG",
+				"CMAKE_CXX_FLAGS_RELWITHDEBINFO": "-O3 -fno-tree-vectorize -g -DNDEBUG",
 				"SRB2_CONFIG_DEV_BUILD": "OFF",
 				"CMAKE_BUILD_TYPE": "RelWithDebInfo"
 			}
