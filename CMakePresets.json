@@ -24,7 +24,7 @@
 			"hidden": true,
 			"cacheVariables": {
 				"CMAKE_C_FLAGS_RELWITHDEBINFO": "-Ofast -march=native -g -DNDEBUG",
-				"CMAKE_CXX_FLAGS_RELWITHDEBINFO": "-Ofast -fno-tree-vectorize -march=native -g -DNDEBUG",
+				"CMAKE_CXX_FLAGS_RELWITHDEBINFO": "-Ofast -march=native -g -DNDEBUG",
 				"SRB2_CONFIG_DEV_BUILD": "OFF",
 				"CMAKE_BUILD_TYPE": "RelWithDebInfo"
 			}

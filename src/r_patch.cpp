@@ -32,7 +32,7 @@ patch_t *Patch_Create(softwarepatch_t *source, size_t srcsize, void *dest)
 
 	if (source)
 	{
-		INT32 col, colsize;
+		volatile INT32 col, colsize;
 		size_t size = sizeof(INT32) * SHORT(source->width);
 		size_t offs = (sizeof(INT16) * 4) + size;
 
