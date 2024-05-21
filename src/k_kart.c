@@ -12875,9 +12875,9 @@ void K_MoveKartPlayer(player_t *player, boolean onground)
 							}
 							else if (ATTACK_IS_DOWN && (player->itemflags & IF_ITEMOUT)) // Banana x3 thrown
 							{
+								player->itemamount--;
 								K_ThrowKartItem(player, false, MT_BANANA, -1, 0, 0);
 								K_PlayAttackTaunt(player->mo);
-								player->itemamount--;
 								K_UpdateHnextList(player, false);
 								player->botvars.itemconfirm = 0;
 							}
@@ -12941,9 +12941,9 @@ void K_MoveKartPlayer(player_t *player, boolean onground)
 							}
 							else if (ATTACK_IS_DOWN && (player->itemflags & IF_ITEMOUT)) // Orbinaut x3 thrown
 							{
+								player->itemamount--;
 								K_ThrowKartItem(player, true, MT_ORBINAUT, 1, 0, 0);
 								K_PlayAttackTaunt(player->mo);
-								player->itemamount--;
 								K_UpdateHnextList(player, false);
 								player->botvars.itemconfirm = 0;
 							}
@@ -12984,9 +12984,9 @@ void K_MoveKartPlayer(player_t *player, boolean onground)
 							}
 							else if (ATTACK_IS_DOWN && HOLDING_ITEM && (player->itemflags & IF_ITEMOUT)) // Jawz thrown
 							{
+								player->itemamount--;
 								K_ThrowKartItem(player, true, MT_JAWZ, 1, 0, 0);
 								K_PlayAttackTaunt(player->mo);
-								player->itemamount--;
 								K_UpdateHnextList(player, false);
 								player->botvars.itemconfirm = 0;
 							}
@@ -13012,9 +13012,9 @@ void K_MoveKartPlayer(player_t *player, boolean onground)
 							}
 							else if (ATTACK_IS_DOWN && (player->itemflags & IF_ITEMOUT))
 							{
+								player->itemamount--;
 								K_ThrowKartItem(player, false, MT_SSMINE, 1, 1, 0);
 								K_PlayAttackTaunt(player->mo);
-								player->itemamount--;
 								player->itemflags &= ~IF_ITEMOUT;
 								K_UpdateHnextList(player, true);
 								player->botvars.itemconfirm = 0;
@@ -13050,9 +13050,9 @@ void K_MoveKartPlayer(player_t *player, boolean onground)
 							}
 							else if (ATTACK_IS_DOWN && (player->itemflags & IF_ITEMOUT))
 							{
+								player->itemamount--;
 								K_ThrowKartItem(player, (player->throwdir > 0), MT_DROPTARGET, -1, 0, 0);
 								K_PlayAttackTaunt(player->mo);
-								player->itemamount--;
 								player->itemflags &= ~IF_ITEMOUT;
 								K_UpdateHnextList(player, true);
 								player->botvars.itemconfirm = 0;
@@ -13294,6 +13294,7 @@ void K_MoveKartPlayer(player_t *player, boolean onground)
 
 									if (player->bubbleblowup > bubbletime*2)
 									{
+										player->itemamount--;
 										K_ThrowKartItem(player, (player->throwdir > 0), MT_BUBBLESHIELDTRAP, -1, 0, 0);
 										if (player->throwdir == -1)
 										{
@@ -13306,7 +13307,6 @@ void K_MoveKartPlayer(player_t *player, boolean onground)
 										player->bubbleblowup = 0;
 										player->bubblecool = 0;
 										player->itemflags &= ~IF_HOLDREADY;
-										player->itemamount--;
 										player->botvars.itemconfirm = 0;
 									}
 								}
@@ -13472,9 +13472,9 @@ void K_MoveKartPlayer(player_t *player, boolean onground)
 							}
 							else if (ATTACK_IS_DOWN && HOLDING_ITEM && (player->itemflags & IF_ITEMOUT)) // Sink thrown
 							{
+								player->itemamount--;
 								K_ThrowKartItem(player, false, MT_SINK, 1, 2, 0);
 								K_PlayAttackTaunt(player->mo);
-								player->itemamount--;
 								player->itemflags &= ~IF_ITEMOUT;
 								K_UpdateHnextList(player, true);
 								player->botvars.itemconfirm = 0;
@@ -13483,11 +13483,11 @@ void K_MoveKartPlayer(player_t *player, boolean onground)
 						case KITEM_GACHABOM:
 							if (ATTACK_IS_DOWN && !HOLDING_ITEM && NO_HYUDORO)
 							{
+								player->itemamount--;
 								K_SetItemOut(player); // need this to set itemscale
 								K_ThrowKartItem(player, true, MT_GACHABOM, 0, 0, 0);
 								K_UnsetItemOut(player);
 								K_PlayAttackTaunt(player->mo);
-								player->itemamount--;
 								player->roundconditions.gachabom_miser = (
 									(player->roundconditions.gachabom_miser == 0)
 										? 1 : 0xFF
