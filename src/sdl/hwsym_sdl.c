@@ -106,6 +106,8 @@ void *hwSym(const char *funcName,void *handle)
 	GETFUNC(SetShaderInfo);
 
 	GETFUNC(SetPaletteLookup);
+	GETFUNC(CreateLightTable);
+	GETFUNC(ClearLightTables);
 	GETFUNC(SetScreenPalette);
 
 #else //HWRENDER

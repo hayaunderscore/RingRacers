@@ -38,6 +38,14 @@ struct GLRGBAFloat
 };
 typedef struct GLRGBAFloat GLRGBAFloat;
 
+// lighttable list item
+struct LTListItem
+{
+	UINT32 id;
+	struct LTListItem *next;
+};
+typedef struct LTListItem LTListItem;
+
 // ==========================================================================
 //                                                                  CONSTANTS
 // ==========================================================================
@@ -59,6 +67,7 @@ static float NEAR_CLIPPING_PLANE =   NZCLIP_PLANE;
 
 
 static  GLuint      tex_downloaded  = 0;
+static  GLuint      lt_downloaded   = 0; // currently bound lighttable texture
 static  GLfloat     fov             = 90.0f;
 static  FBITFIELD   CurrentPolyFlags;
 
@@ -68,6 +77,10 @@ static FTextureInfo *TexCacheHead = NULL;
 
 static RGBA_t *textureBuffer = NULL;
 static size_t textureBufferSize = 0;
+
+// Linked list of all lighttables.
+static LTListItem *LightTablesTail = NULL;
+static LTListItem *LightTablesHead = NULL;
 
 static RGBA_t screenPalette[256] = {0}; // the palette for the postprocessing step in palette rendering
 static GLuint screenPaletteTex = 0; // 1D texture containing the screen palette
@@ -616,6 +629,7 @@ typedef enum
 	// palette rendering
 	gluniform_palette_tex, // 1d texture containing a palette
 	gluniform_palette_lookup_tex, // 3d texture containing the rgb->index lookup table
+	gluniform_lighttable_tex, // 2d texture containing a light table
 
 	// misc.
 	gluniform_leveltime,
@@ -711,9 +725,10 @@ void SetupGLFunc4(void)
 EXPORT boolean HWRAPI(InitShaders) (void)
 {
 #ifdef GL_SHADERS
+
 	if (!pglUseProgram)
 		return false;
-	
+
 	gl_fallback_shader.vertex_shader = Z_StrDup(GLSL_FALLBACK_VERTEX_SHADER);
 	gl_fallback_shader.fragment_shader = Z_StrDup(GLSL_FALLBACK_FRAGMENT_SHADER);
 
@@ -731,7 +746,7 @@ EXPORT boolean HWRAPI(InitShaders) (void)
 
 EXPORT void HWRAPI(LoadShader) (int slot, char *code, hwdshaderstage_t stage)
 {
-#ifdef GL_SHADERS
+	#ifdef GL_SHADERS
 	gl_shader_t *shader;
 
 	if (slot < 0 || slot >= HWR_MAXSHADERS)
@@ -740,17 +755,18 @@ EXPORT void HWRAPI(LoadShader) (int slot, char *code, hwdshaderstage_t stage)
 	shader = &gl_shaders[slot];
 
 #define LOADSHADER(source) { \
-	if (shader->source) \
+	if (shader->source){ \
 		Z_Free(shader->source); \
-	shader->source = code; \
+	}							\
+		shader->source = code; \
 	}
 
 	if (stage == HWD_SHADERSTAGE_VERTEX)
 		LOADSHADER(vertex_shader)
-	else if (stage == HWD_SHADERSTAGE_FRAGMENT)
-		LOADSHADER(fragment_shader)
-	else
-		I_Error("LoadShader: invalid shader stage");
+		else if (stage == HWD_SHADERSTAGE_FRAGMENT)
+			LOADSHADER(fragment_shader)
+			else
+				I_Error("LoadShader: invalid shader stage");
 
 #undef LOADSHADER
 #else
@@ -759,6 +775,7 @@ EXPORT void HWRAPI(LoadShader) (int slot, char *code, hwdshaderstage_t stage)
 	(void)stage;
 #endif
 }
+
 
 EXPORT boolean HWRAPI(CompileShader) (int slot)
 {
@@ -826,6 +843,7 @@ EXPORT void HWRAPI(SetShader) (int slot)
 		UnSetShader();
 		return;
 	}
+
 	if (gl_allowshaders)
 	{
 		gl_shader_t *next_shader = &gl_shaders[slot]; // the gl_shader_t we are going to switch to
@@ -841,7 +859,6 @@ EXPORT void HWRAPI(SetShader) (int slot)
 			gl_shaderstate.type = slot;
 			gl_shaderstate.changed = true;
 		}
-
 		gl_shadersenabled = true;
 
 		return;
@@ -1200,11 +1217,11 @@ EXPORT void HWRAPI(ReadScreenTexture) (int tex, UINT8 *dst_data)
 	// and draw generic2 back after reading the framebuffer.
 	// this hack is for some reason **much** faster than the simple solution of using glGetTexImage.
 	if (tex != HWD_SCREENTEXTURE_GENERIC2)
-		DrawScreenTexture(tex);
+		DrawScreenTexture(tex, NULL, 0);
 	pglPixelStorei(GL_PACK_ALIGNMENT, 1);
 	pglReadPixels(0, 0, screen_width, screen_height, GL_RGB, GL_UNSIGNED_BYTE, dst_data);
 	if (tex != HWD_SCREENTEXTURE_GENERIC2)
-		DrawScreenTexture(HWD_SCREENTEXTURE_GENERIC2);
+		DrawScreenTexture(HWD_SCREENTEXTURE_GENERIC2, NULL, 0);
 	// Flip image upside down.
 	// In other words, convert OpenGL's "bottom->top" row order into "top->bottom".
 	for(i = 0; i < screen_height/2; i++)
@@ -2005,6 +2022,7 @@ static boolean Shader_CompileProgram(gl_shader_t *shader, GLint i)
 	// palette rendering
 	shader->uniforms[gluniform_palette_tex] = GETUNI("palette_tex");
 	shader->uniforms[gluniform_palette_lookup_tex] = GETUNI("palette_lookup_tex");
+	shader->uniforms[gluniform_lighttable_tex] = GETUNI("lighttable_tex");
 
 	// misc. (custom shaders)
 	shader->uniforms[gluniform_leveltime] = GETUNI("leveltime");
@@ -2021,10 +2039,11 @@ static boolean Shader_CompileProgram(gl_shader_t *shader, GLint i)
 	// texture unit numbers for the samplers used for palette rendering
 	UNIFORM_1(shader->uniforms[gluniform_palette_tex], 2, pglUniform1i);
 	UNIFORM_1(shader->uniforms[gluniform_palette_lookup_tex], 1, pglUniform1i);
+	UNIFORM_1(shader->uniforms[gluniform_lighttable_tex], 2, pglUniform1i);
 
 	// restore gl shader state
 	pglUseProgram(gl_shaderstate.program);
-#undef UNIFORM_1
+	#undef UNIFORM_1
 
 	return true;
 }
@@ -2088,6 +2107,14 @@ static void PreparePolygon(FSurfaceInfo *pSurf, FOutVector *pOutVerts, FBITFIELD
 			fade.green = byte2float[pSurf->FadeColor.s.green];
 			fade.blue  = byte2float[pSurf->FadeColor.s.blue];
 			fade.alpha = byte2float[pSurf->FadeColor.s.alpha];
+
+			if (pSurf->LightTableId && pSurf->LightTableId != lt_downloaded)
+			{
+				pglActiveTexture(GL_TEXTURE2);
+				pglBindTexture(GL_TEXTURE_2D, pSurf->LightTableId);
+				pglActiveTexture(GL_TEXTURE0);
+				lt_downloaded = pSurf->LightTableId;
+			}
 		}
 	}
 
@@ -2637,6 +2664,14 @@ static void DrawModelEx(model_t *model, INT32 frameIndex, float duration, float 
 	else if (Surface->PolyColor.s.alpha == 0xFF)
 		flags |= (PF_Occlude | PF_Masked);
 
+	if (Surface->LightTableId && Surface->LightTableId != lt_downloaded)
+	{
+		pglActiveTexture(GL_TEXTURE2);
+		pglBindTexture(GL_TEXTURE_2D, Surface->LightTableId);
+		pglActiveTexture(GL_TEXTURE0);
+		lt_downloaded = Surface->LightTableId;
+	}
+
 	SetBlend(flags);
 	Shader_SetUniforms(Surface, &poly, &tint, &fade);
 
@@ -3012,7 +3047,7 @@ EXPORT void HWRAPI(FlushScreenTextures) (void)
 		screenTextures[i] = 0;
 }
 
-EXPORT void HWRAPI(DrawScreenTexture)(int tex)
+EXPORT void HWRAPI(DrawScreenTexture)(int tex, FSurfaceInfo *surf, FBITFIELD polyflags)
 {
 	float xfix, yfix;
 
@@ -3044,8 +3079,10 @@ EXPORT void HWRAPI(DrawScreenTexture)(int tex)
 	pglClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
 	pglBindTexture(GL_TEXTURE_2D, screenTextures[tex]);
-
-	Shader_SetUniforms(NULL, NULL, NULL, NULL); // prepare shader, if it is enabled
+	if (surf)
+		PreparePolygon(surf, NULL, polyflags);
+	else
+		Shader_SetUniforms(NULL, NULL, NULL, NULL); // prepare shader, if it is enabled
 
 	pglColor4ubv(white);
 
@@ -3254,6 +3291,48 @@ EXPORT void HWRAPI(SetPaletteLookup)(UINT8 *lut)
 	pglTexImage3D(GL_TEXTURE_3D, 0, internalFormat, HWR_PALETTE_LUT_SIZE, HWR_PALETTE_LUT_SIZE, HWR_PALETTE_LUT_SIZE,
 				  0, GL_RED, GL_UNSIGNED_BYTE, lut);
 	pglActiveTexture(GL_TEXTURE0);
+}
+
+EXPORT UINT32 HWRAPI(CreateLightTable)(RGBA_t *hw_lighttable)
+{
+	LTListItem *item = malloc(sizeof(LTListItem));
+	if (!LightTablesTail)
+	{
+		LightTablesHead = LightTablesTail = item;
+	}
+	else
+	{
+		LightTablesTail->next = item;
+		LightTablesTail = item;
+	}
+	item->next = NULL;
+	pglGenTextures(1, &item->id);
+	pglBindTexture(GL_TEXTURE_2D, item->id);
+	pglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	pglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	pglTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 256, 32, 0, GL_RGBA, GL_UNSIGNED_BYTE, hw_lighttable);
+
+	// restore previously bound texture
+	pglBindTexture(GL_TEXTURE_2D, tex_downloaded);
+
+	return item->id;
+}
+
+// Delete light table textures, ids given before become invalid and must not be used.
+EXPORT void HWRAPI(ClearLightTables)(void)
+{
+	while (LightTablesHead)
+	{
+		LTListItem *item = LightTablesHead;
+		pglDeleteTextures(1, (GLuint *)&item->id);
+		LightTablesHead = item->next;
+		free(item);
+	}
+
+	LightTablesTail = NULL;
+
+	// we no longer have a bound light table (if we had one), we just deleted it!
+	lt_downloaded = 0;
 }
 
 // This palette is used for the palette rendering postprocessing step.

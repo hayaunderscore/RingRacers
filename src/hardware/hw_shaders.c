@@ -25,13 +25,13 @@ static struct {
 	const char *fragment;
 } const gl_shadersources[] = {
 	// Floor shader
-	{GLSL_DEFAULT_VERTEX_SHADER, GLSL_SOFTWARE_FRAGMENT_SHADER},
+	{GLSL_DEFAULT_VERTEX_SHADER, GLSL_FLOOR_FRAGMENT_SHADER},
 
 	// Wall shader
-	{GLSL_DEFAULT_VERTEX_SHADER, GLSL_SOFTWARE_FRAGMENT_SHADER},
+	{GLSL_DEFAULT_VERTEX_SHADER, GLSL_WALL_FRAGMENT_SHADER},
 
 	// Sprite shader
-	{GLSL_DEFAULT_VERTEX_SHADER, GLSL_SOFTWARE_FRAGMENT_SHADER},
+	{GLSL_DEFAULT_VERTEX_SHADER, GLSL_WALL_FRAGMENT_SHADER},
 
 	// Sprite clipping hack shader (for pulling things out of the floor)
 	{GLSL_SPRITECLIP_HACK_VERTEX_SHADER, GLSL_SOFTWARE_FRAGMENT_SHADER},
@@ -53,6 +53,9 @@ static struct {
 
 	// Palette postprocess shader
 	{GLSL_DEFAULT_VERTEX_SHADER, GLSL_PALETTE_POSTPROCESS_FRAGMENT_SHADER},
+
+	// UI colormap fade shader
+	{GLSL_DEFAULT_VERTEX_SHADER, GLSL_UI_COLORMAP_FADE_FRAGMENT_SHADER},
 
 	{NULL, NULL},
 };
@@ -78,6 +81,9 @@ static shader_t gl_shaders[NUMSHADERTARGETS*2];
 static shadertarget_t gl_shadertargets[NUMSHADERTARGETS];
 
 #define WHITESPACE_CHARS " \t"
+
+#define MODEL_LIGHTING_DEFINE "#define SRB2_MODEL_LIGHTING"
+#define PALETTE_RENDERING_DEFINE "#define SRB2_PALETTE_RENDERING"
 
 // Initialize shader variables and the backend's shader system. Load the base shaders.
 // Returns false if shaders cannot be used.
@@ -274,6 +280,12 @@ static char *HWR_PreprocessShader(char *original)
 
 	// Calculate length of modified shader.
 	new_len = original_len;
+#ifdef BAD_MODEL_OPTIONS
+	if (cv_glmodellighting.value)
+		ADD_TO_LEN(MODEL_LIGHTING_DEFINE)
+#endif
+	if (cv_glpaletterendering.value)
+		ADD_TO_LEN(PALETTE_RENDERING_DEFINE)
 
 #undef ADD_TO_LEN
 
@@ -311,6 +323,14 @@ static char *HWR_PreprocessShader(char *original)
 		strcpy(write_pos, line_ending); \
 		write_pos += line_ending_len; \
 	}
+
+	// Write the defines.
+#ifdef BAD_MODEL_OPTIONS
+	if (cv_glmodellighting.value)
+		WRITE_DEFINE(MODEL_LIGHTING_DEFINE)
+#endif
+	if (cv_glpaletterendering.value)
+		WRITE_DEFINE(PALETTE_RENDERING_DEFINE)
 
 #undef WRITE_DEFINE
 
@@ -421,6 +441,7 @@ customshaderxlat_t shaderxlat[] =
 	{"Fog", SHADER_FOG},
 	{"Sky", SHADER_SKY},
 	{"PalettePostprocess", SHADER_PALETTE_POSTPROCESS},
+	{"UIColormapFade", SHADER_UI_COLORMAP_FADE},
 	{NULL, 0},
 };
 

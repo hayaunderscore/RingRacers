@@ -60,7 +60,7 @@ EXPORT INT32 HWRAPI(GetTextureUsed) (void);
 
 EXPORT void HWRAPI(FlushScreenTextures) (void);
 EXPORT void HWRAPI(DoScreenWipe) (int wipeStart, int wipeEnd);
-EXPORT void HWRAPI(DrawScreenTexture) (int tex);
+EXPORT void HWRAPI(DrawScreenTexture) (int tex, FSurfaceInfo *surf, FBITFIELD polyflags);
 EXPORT void HWRAPI(MakeScreenTexture) (int tex);
 EXPORT void HWRAPI(DrawScreenFinalTexture) (int tex, int width, int height);
 
@@ -76,6 +76,8 @@ EXPORT void HWRAPI(UnSetShader) (void);
 EXPORT void HWRAPI(SetShaderInfo) (hwdshaderinfo_t info, INT32 value);
 
 EXPORT void HWRAPI(SetPaletteLookup)(UINT8 *lut);
+EXPORT UINT32 HWRAPI(CreateLightTable)(RGBA_t *hw_lighttable);
+EXPORT void HWRAPI(ClearLightTables)(void);
 EXPORT void HWRAPI(SetScreenPalette)(RGBA_t *palette);
 
 // ==========================================================================
@@ -125,6 +127,8 @@ struct hwdriver_s
 	SetShaderInfo       pfnSetShaderInfo;
 
 	SetPaletteLookup    pfnSetPaletteLookup;
+	CreateLightTable    pfnCreateLightTable;
+	ClearLightTables    pfnClearLightTables;
 	SetScreenPalette    pfnSetScreenPalette;
 };
 

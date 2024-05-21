@@ -179,7 +179,7 @@ static void finish_legacy_ogl_update()
 	{
 		HWD.pfnMakeScreenTexture(HWD_SCREENTEXTURE_GENERIC2);
 		HWD.pfnSetShader(HWR_GetShaderFromTarget(SHADER_PALETTE_POSTPROCESS));
-		HWD.pfnDrawScreenTexture(HWD_SCREENTEXTURE_GENERIC2);
+		HWD.pfnDrawScreenTexture(HWD_SCREENTEXTURE_GENERIC2, NULL, 0);
 		HWD.pfnUnSetShader();
 	}
 	OglSdlFinishUpdate(cv_vidwait.value);
