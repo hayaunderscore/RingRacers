@@ -83,7 +83,8 @@
 		"float lightz = clamp(z / 16.0, 0.0, 127.0);\n" \
 		"float startmap = (15.0 - lightnum) * 4.0;\n" \
 		"float scale = 160.0 / (lightz + 1.0);\n" \
-		"return startmap - scale * 0.5;\n" \
+		"float cap = (155.0 - light) * 0.26;\n" \
+		"return max(startmap * STARTMAP_FUDGE - scale * 0.5 * SCALE_FUDGE, cap);\n" \
 	"}\n"
 // lighting cap adjustment:
 // first num (155.0), increase to make it start to go dark sooner
@@ -124,10 +125,10 @@
 		"colorIntensity = max(final_color.r, max(final_color.g, final_color.b));\n" \
 		"colorIntensity = abs(colorIntensity - min(fade_color.r, min(fade_color.g, fade_color.b)));\n" \
 	"}\n" \
-		"colorIntensity *= darkness;\n" \
-		"colorIntensity *= fade_color.a * 10.0;\n" \
+	"colorIntensity *= darkness;\n" \
+	"colorIntensity *= fade_color.a * 10.0;\n" \
 	"if (abs(final_color.r - fade_color.r) <= colorIntensity) {\n" \
-	"	final_color.r = fade_color.r;\n" \
+		"final_color.r = fade_color.r;\n" \
 	"} else if (final_color.r < fade_color.r) {\n" \
 		"final_color.r += colorIntensity;\n" \
 	"} else {\n" \
@@ -155,15 +156,11 @@
 	"vec2 lighttable_coord = vec2((tex_pal_idx + 0.5) / 256.0, (light_y + 0.5) / 32.0);\n" \
 	"vec4 final_color = texture2D(lighttable_tex, lighttable_coord);\n" \
 	"final_color.a = texel.a * poly_color.a;\n" \
-	"float brightmap_mix = floor(texture2D(brightmap, gl_TexCoord[0].st).r);\n" \
-	"float light_gain = (255.0 - lighting) * brightmap_mix;\n" \
-	"float final_lighting = lighting + light_gain;\n" \
 	"gl_FragColor = final_color;\n" \
 
 #define GLSL_SOFTWARE_FRAGMENT_SHADER \
 	"#ifdef SRB2_PALETTE_RENDERING\n" \
 	"uniform sampler2D tex;\n" \
-	"uniform sampler2D brightmap;\n" \
 	"uniform sampler3D palette_lookup_tex;\n" \
 	"uniform sampler2D lighttable_tex;\n" \
 	"uniform vec4 poly_color;\n" \
@@ -221,18 +218,14 @@
 	GLSL_WALL_FUDGES \
 	"#ifdef SRB2_PALETTE_RENDERING\n" \
 	"uniform sampler2D tex;\n" \
-	"uniform sampler2D brightmap;\n" \
 	"uniform sampler3D palette_lookup_tex;\n" \
 	"uniform sampler2D lighttable_tex;\n" \
 	"uniform vec4 poly_color;\n" \
 	"uniform float lighting;\n" \
 	GLSL_DOOM_COLORMAP \
 	"void main(void) {\n" \
-	"	vec4 texel = texture2D(tex, gl_TexCoord[0].st);\n" \
-	"#ifdef SRB2_MODEL_LIGHTING\n" \
-		"texel *= gl_Color;\n" \
-	"#endif\n" \
-	GLSL_PALETTE_RENDERING \
+		"vec4 texel = texture2D(tex, gl_TexCoord[0].st);\n" \
+		GLSL_PALETTE_RENDERING \
 	"}\n" \
 	"#else\n" \
 	"uniform sampler2D tex;\n" \
@@ -281,7 +274,6 @@
 	"const float pi = 3.14159;\n" \
 	"#ifdef SRB2_PALETTE_RENDERING\n" \
 	"uniform sampler2D tex;\n" \
-	"uniform sampler2D brightmap;\n" \
 	"uniform sampler3D palette_lookup_tex;\n" \
 	"uniform sampler2D lighttable_tex;\n" \
 	"uniform vec4 poly_color;\n" \
@@ -415,17 +407,6 @@
 	"uniform vec4 poly_color;\n" \
 	"void main(void) {\n" \
 		"gl_FragColor = texture2D(tex, gl_TexCoord[0].st) * poly_color;\n" \
-	"}\0"
-
-//
-// Sky fragment shader
-// Modulates poly_color with gl_Color
-//
-#define GLSL_SKY_FRAGMENT_SHADER \
-	"uniform sampler2D tex;\n" \
-	"uniform vec4 poly_color;\n" \
-	"void main(void) {\n" \
-		"gl_FragColor = texture2D(tex, gl_TexCoord[0].st) * gl_Color * poly_color;\n" \
 	"}\0"
 
 #endif
