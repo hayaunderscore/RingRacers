@@ -17,37 +17,29 @@ menuitem_t OPTIONS_Noire[] =
 	{IT_HEADER, "Colorized Hud..", NULL,
 		NULL, {NULL}, 0, 0},
 
-	{IT_STRING | IT_CVAR, "Colorized Hud", "HUD will match player color.",
+	{IT_STRING | IT_CVAR, "Colorized Hud", "HUD will be colorized.",
 		NULL, {.cvar = &cv_colorizedhud}, 0, 0},
 
-	{IT_STRING | IT_CVAR, "Colorized Itembox", "Box will become colored as well.",
+	{IT_STRING | IT_CVAR, "Colorized Itembox", "Itembox coloring.",
 		NULL, {.cvar = &cv_colorizeditembox}, 0, 0},
 
-	{IT_STRING | IT_CVAR, "Colorized Hud Color", "Cuse a different colors for hud",
+	{IT_STRING | IT_CVAR, "Colorized Hud Color", "Color used for hud",
 		NULL, {.cvar = &cv_colorizedhudcolor}, 0, 0},
-
-
-
-
 };
 
 void ColorHUD_OnChange(void)
 {
 	if (con_startup) return;
 
-	if(cv_colorizedhud.value && clr_hud)
+	if (cv_colorizedhud.value && clr_hud)
 	{
-		for (int i = 2; i < 5; i++)
-		{
+		for (int i = 2; i < 4; i++)
 			OPTIONS_Noire[i].status = IT_STRING | IT_CVAR;
-		}
 	}
 	else
 	{
-		for (int i = 2; i < 5; i++)
-		{
+		for (int i = 2; i < 4; i++)
 			OPTIONS_Noire[i].status = IT_GRAYEDOUT;
-		}
 	}
 }
 
