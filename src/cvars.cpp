@@ -35,6 +35,9 @@
 #include "m_fixed.h" // FRACUNIT
 #include "r_skins.h" // DEFAULTSKIN
 
+// Noire
+#include "noire/n_hud.h"
+
 // There is a memset in one of consvar_t's constructors. It
 // SHOULD be safe if there is no polymorphism, but just
 // double-checking.
@@ -186,6 +189,7 @@ struct CVarList
 
 	void finish()
 	{
+		N_ReloadHUDColorCvar();
 		// load is guaranteed to only be called once, even
 		// across different instances of CVarList.
 		static int once_only = load();
@@ -501,6 +505,16 @@ consvar_t precachesound = Player("precachesound", "Off").on_off();
 consvar_t stereoreverse = Player("stereoreverse", "Off").on_off();
 
 
+//
+// Noire client related cvars for customization
+// These save
+//
+
+consvar_t cv_colorizedhud = Player("colorizedhud", "On").on_off().onchange(ColorHUD_OnChange);
+consvar_t cv_colorizeditembox = Player("colorizeditembox", "On").on_off();
+consvar_t cv_darkitembox = Player("darkitembox", "On").on_off();
+
+consvar_t cv_colorizedhudcolor = Player("colorizedhudcolor", "Skin Color").values(HudColor_cons_t);
 
 //
 // Server local, also available on dedicated servers.
