@@ -730,35 +730,27 @@ void R_RenderMaskedSegRange(drawseg_t *drawseg, INT32 x1, INT32 x2)
 }
 
 template <typename T>
-static constexpr T saturating_add(T x, T y) noexcept
+static inline constexpr T saturating_add(T x, T y) noexcept
 {
-	INT64 z;
-	z = static_cast<INT64>(x) + static_cast<INT64>(y);
-	if (z > static_cast<INT64>(std::numeric_limits<T>::max()))
+    INT64 z;
+    if (__builtin_add_overflow(static_cast<INT64>(x), static_cast<INT64>(y), &z)) 
 	{
-		z = static_cast<INT64>(std::numeric_limits<T>::max());
-	}
-	else if (z < static_cast<INT64>(std::numeric_limits<T>::min()))
-	{
-		z = static_cast<INT64>(std::numeric_limits<T>::min());
-	}
+        z = static_cast<INT64>(std::numeric_limits<T>::max());
+    }
+	
 	return static_cast<T>(z);
 }
 
 template <typename T>
-static constexpr T saturating_mul(T x, T y) noexcept
+static inline constexpr T saturating_mul(T x, T y) noexcept
 {
-	INT64 z;
-	z = static_cast<INT64>(x) * static_cast<INT64>(y);
-	if (z > static_cast<INT64>(std::numeric_limits<T>::max()))
+    INT64 z;
+    if (__builtin_mul_overflow(static_cast<INT64>(x), static_cast<INT64>(y), &z)) 
 	{
-		z = static_cast<INT64>(std::numeric_limits<T>::max());
-	}
-	else if (z < static_cast<INT64>(std::numeric_limits<T>::min()))
-	{
-		z = static_cast<INT64>(std::numeric_limits<T>::min());
-	}
-	return static_cast<T>(z);
+        z = static_cast<INT64>(std::numeric_limits<T>::max());
+    }
+
+    return static_cast<T>(z);
 }
 
 // Loop through R_DrawMaskedColumn calls
