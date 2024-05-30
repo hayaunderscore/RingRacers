@@ -539,8 +539,16 @@ INT32 highlightflags, recommendedflags, warningflags;
 void M_GetGametypeColor(void)
 {
 	INT16 gt;
+	
+	if (cons_menuhighlight.value == V_AQUAMAP) // standard durr colours
+	{
+		highlightflags = V_AQUAMAP;
+		recommendedflags = V_GREENMAP;
+		warningflags = V_ORANGEMAP;
+		return;
+	}
 
-	warningflags = V_REDMAP;
+	warningflags = V_ORANGEMAP;
 	recommendedflags = V_GREENMAP;
 
 	if (cons_menuhighlight.value)
@@ -559,7 +567,7 @@ void M_GetGametypeColor(void)
 		return;
 	}
 
-	warningflags = V_REDMAP;
+	warningflags = V_ORANGEMAP;
 	recommendedflags = V_GREENMAP;
 
 	if (modeattacking != ATTACKING_NONE)
@@ -588,7 +596,7 @@ void M_GetGametypeColor(void)
 		return;
 	}
 
-	highlightflags = V_YELLOWMAP; // FALLBACK
+	highlightflags = V_AQUAMAP; // FALLBACK
 }
 
 // excuse me but I'm extremely lazy:

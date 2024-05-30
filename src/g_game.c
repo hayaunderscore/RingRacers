@@ -3302,7 +3302,7 @@ gametype_t *gametypes[MAXGAMETYPES+1] =
 // Pretty and consistent ^u^
 // See also M_GetGametypeColor.
 //
-UINT8 G_GetGametypeColor(INT16 gt)
+/*UINT8 G_GetGametypeColor(INT16 gt)
 {
 	if (modeattacking != ATTACKING_NONE)
 		return orangemap[52];
@@ -3311,7 +3311,7 @@ UINT8 G_GetGametypeColor(INT16 gt)
 	if (gt == GT_RACE)
 		return skymap[131];
 	return 247; // FALLBACK
-}
+}*/
 
 //
 // G_GetGametypeByName

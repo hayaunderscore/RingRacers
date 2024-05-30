@@ -1335,7 +1335,8 @@ extern CV_PossibleValue_t hudlines_cons_t[];
 void CONS_hudlines_Change(void);
 consvar_t cons_hudlines = Console("con_hudlines", "5").values(hudlines_cons_t).onchange(CONS_hudlines_Change);
 
-consvar_t cons_menuhighlight = Console("con_menuhighlight", "Gametype Default").values({
+consvar_t cons_menuhighlight = Console("con_menuhighlight", "DRRR Default").values({
+	{V_AQUAMAP, 	"DRRR Default"},
 	{0, 			"Gametype Default"},
 	{V_YELLOWMAP, 	"Always Yellow"},
 	{V_PURPLEMAP, 	"Always Purple"},
