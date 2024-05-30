@@ -998,7 +998,10 @@ void M_Drawer(void)
 	if (menuactive)
 	{
 		if (currentMenu->drawroutine)
+		{
+			M_GetGametypeColor();
 			currentMenu->drawroutine(); // call current menu Draw routine
+		}
 
 		M_DrawMenuForeground();
 
