@@ -594,6 +594,7 @@ if(SRB2_CONFIG_ASAN)
 endif()
 
 add_subdirectory(audio)
+add_subdirectory(noire)
 add_subdirectory(core)
 add_subdirectory(hwr2)
 add_subdirectory(io)

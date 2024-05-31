@@ -35,6 +35,9 @@
 #include "m_fixed.h" // FRACUNIT
 #include "r_skins.h" // DEFAULTSKIN
 
+// Noire
+#include "noire/n_hud.h"
+
 // There is a memset in one of consvar_t's constructors. It
 // SHOULD be safe if there is no polymorphism, but just
 // double-checking.
@@ -186,6 +189,7 @@ struct CVarList
 
 	void finish()
 	{
+		N_ReloadHUDColorCvar();
 		// load is guaranteed to only be called once, even
 		// across different instances of CVarList.
 		static int once_only = load();
@@ -452,6 +456,8 @@ consvar_t cv_scr_scale = Player("scr_scale", "1.0").floating_point();
 consvar_t cv_scr_x = Player("scr_x", "0.0").floating_point();
 consvar_t cv_scr_y = Player("scr_y", "0.0").floating_point();
 
+consvar_t cv_translucenthud = Player("translucenthud", "10").values({{0, "MIN"}, {10, "MAX"}});
+
 consvar_t cv_seenames = Player("seenames", "On").on_off();
 consvar_t cv_shadow = Player("shadow", "On").on_off();
 consvar_t cv_showfocuslost = Player("showfocuslost", "Yes").yes_no();
@@ -499,6 +505,16 @@ consvar_t precachesound = Player("precachesound", "Off").on_off();
 consvar_t stereoreverse = Player("stereoreverse", "Off").on_off();
 
 
+//
+// Noire client related cvars for customization
+// These save
+//
+
+consvar_t cv_colorizedhud = Player("colorizedhud", "On").on_off().onchange(ColorHUD_OnChange);
+consvar_t cv_colorizeditembox = Player("colorizeditembox", "On").on_off();
+consvar_t cv_darkitembox = Player("darkitembox", "On").on_off();
+
+consvar_t cv_colorizedhudcolor = Player("colorizedhudcolor", "Skin Color").values(HudColor_cons_t);
 
 //
 // Server local, also available on dedicated servers.
@@ -931,7 +947,7 @@ consvar_t cv_renderhitbox = PlayerCheat("renderhitbox", "Off").values(renderhitb
 
 consvar_t cv_bighead = Player("bighead", "Off").dont_save().values(CV_OnOff).flags(CV_NOSHOWHELP).description("Works out at the library");
 consvar_t cv_shittysigns = Player("shittysigns", "Off").dont_save().values(CV_OnOff).flags(CV_NOSHOWHELP).description("It's better because it's worse");
-consvar_t cv_tastelesstaunts = Player("tastelesstaunts", "Off").dont_save().values(CV_OnOff).flags(CV_NOSHOWHELP).description("Universally hated in dev");
+consvar_t cv_tastelesstaunts = Player("tastelesstaunts", "Off").values(CV_OnOff).description("Universally hated in dev");
 consvar_t cv_4thgear = UnsavedNetVar("4thgear", "Off").values(CV_OnOff).flags(CV_NOSHOWHELP).description("Surpassing your limits!");
 consvar_t cv_levelskull = UnsavedNetVar("levelskull", "Off").values(CV_OnOff).flags(CV_NOSHOWHELP).description("What Storm Rig looked like 2 months before 2.0");
 
@@ -1318,6 +1334,26 @@ consvar_t cons_height = Console("con_height", "50").values(CV_Unsigned).onchange
 extern CV_PossibleValue_t hudlines_cons_t[];
 void CONS_hudlines_Change(void);
 consvar_t cons_hudlines = Console("con_hudlines", "5").values(hudlines_cons_t).onchange(CONS_hudlines_Change);
+
+consvar_t cons_menuhighlight = Console("con_menuhighlight", "DRRR Default").values({
+	{V_AQUAMAP, 	"DRRR Default"},
+	{0, 			"Gametype Default"},
+	{V_YELLOWMAP, 	"Always Yellow"},
+	{V_PURPLEMAP, 	"Always Purple"},
+	{V_GREENMAP, 	"Always Green"},
+	{V_BLUEMAP, 	"Always Blue"},
+	{V_REDMAP, 		"Always Red"},
+	{V_GRAYMAP, 	"Always Gray"},
+	{V_ORANGEMAP, 	"Always Orange"},
+	{V_SKYMAP, 		"Always Sky-Blue"},
+	{V_GOLDMAP, 	"Always Gold"},
+	{V_LAVENDERMAP, "Always Lavender"},
+	{V_BROWNMAP , 		"Always Brown"},
+	{V_SKYMAP,	"Always Sky"},
+	{V_PINKMAP, 	"Always Pink"},
+	{V_BROWNMAP, 	"Always Brown"},
+	{V_TANMAP, 	"Always Tan"}
+});
 
 // how many seconds the hud messages lasts on the screen
 // CV_Unsigned can overflow when multiplied by TICRATE later, so let's use a 3-year limit instead
