@@ -51,7 +51,7 @@ menuitem_t OPTIONS_Main[] =
 		NULL, {.routine = M_Manual}, 0, 0},
 #endif
 
-	{IT_STRING | IT_SUBMENU, "Noire Options", "Toggle options related to Noire. No gameplay toggles here!",
+	{IT_STRING | IT_SUBMENU, "Noire Options", "Toggle options related to Noire and HEP2. No gameplay toggles here!",
 		NULL, {.submenu = &OPTIONS_NoireDef}, 0, 0},
 };
 

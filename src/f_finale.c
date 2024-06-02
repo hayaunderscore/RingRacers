@@ -1744,7 +1744,7 @@ void F_VersionDrawer(void)
 
 #else // Regular build
 		// Shill :)
-		addtext(trans, va("HEP2 v2.0.2 (%s)", VERSIONSTRING));
+		addtext(trans, va("HEP2 %s (%s)", HEPVSTRING, VERSIONSTRING));
 #endif
 
 		if (compuncommitted)
