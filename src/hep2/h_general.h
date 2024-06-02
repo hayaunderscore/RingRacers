@@ -1,6 +1,6 @@
-// HAYA'S EXPANSION PACK 2
+// Haya's Expansion Pack II for Dr. Robotnik's Ring Racers
 //-----------------------------------------------------------------------------
-// Copyright (C) 2024 by haya3218.
+// Copyright (C) 2024 by hayaUnderscore/haya
 
 // This program is free software distributed under the
 // terms of the GNU General Public License, version 2.
