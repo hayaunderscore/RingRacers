@@ -248,6 +248,7 @@ if("${CMAKE_SYSTEM_NAME}" MATCHES "Linux")
 	if(${SRB2_SYSTEM_BITS} EQUAL 64)
 		target_compile_definitions(SRB2SDL2 PRIVATE -DLINUX64)
 	endif()
+	target_link_libraries(SRB2SDL2 PRIVATE -lpthread)
 endif()
 
 if("${CMAKE_SYSTEM_NAME}" MATCHES "Darwin")
