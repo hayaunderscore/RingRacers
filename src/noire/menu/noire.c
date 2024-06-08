@@ -10,6 +10,7 @@
 // Noire
 #include "../n_menu.h"
 #include "../n_cvar.h"
+#include "../../hep2/h_cvars.h"
 #include "../../d_main.h"
 #include "../../v_video.h"
 
@@ -41,6 +42,12 @@ menuitem_t OPTIONS_Noire[] =
 
 	{IT_STRING | IT_CVAR, "Highreshudscale", "When the hud is high how much crap scales.",
 		NULL, {.cvar = &cv_highreshudscale}, 0, 0},
+
+	{IT_HEADER, "Visuals...", NULL,
+		NULL, {NULL}, 0, 0},
+
+	{IT_STRING | IT_CVAR, "Visual Hopping", "Do a funny hop!",
+		NULL, {.cvar = &cv_saltyhop}, 0, 0},
 };
 
 void ColorHUD_OnChange(void)
