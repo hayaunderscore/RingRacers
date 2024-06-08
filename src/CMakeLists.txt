@@ -249,6 +249,7 @@ if("${CMAKE_SYSTEM_NAME}" MATCHES "Linux")
 		target_compile_definitions(SRB2SDL2 PRIVATE -DLINUX64)
 	endif()
 	target_link_libraries(SRB2SDL2 PRIVATE -lpthread)
+	target_compile_options(SRB2SDL2 PRIVATE -rdynamic) # Use -rdynamic so a backtrace log shows function names instead of addresses
 endif()
 
 if("${CMAKE_SYSTEM_NAME}" MATCHES "Darwin")
