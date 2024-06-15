@@ -46,6 +46,9 @@ menuitem_t OPTIONS_Noire[] =
 	{IT_STRING | IT_CVAR, "Power Music", "Toggles the power music during gameplay.",
 		NULL, {.cvar = &cv_specialmusic}, 0, 0},
 		
+	{IT_STRING | IT_CVAR | IT_CV_STRING, "Title Screen Music", "Music lump to replace Fluvial Beat Deposits on the title screen.",
+		NULL, {.cvar = &cv_menumusic}, 0, 0},
+		
 	{IT_HEADER, "Visuals...", NULL,
 		NULL, {NULL}, 0, 0},
 		

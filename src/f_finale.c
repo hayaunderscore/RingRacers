@@ -52,6 +52,9 @@
 #include "k_credits.h"
 #include "i_sound.h"
 
+// HEP2
+#include "hep2/h_cvars.h"
+
 // Stage of animation:
 // 0 = text, 1 = art screen
 INT32 finalecount;
@@ -1958,7 +1961,17 @@ luahook:
 void F_PlayTitleScreenMusic(void)
 {
 	Music_Loop("title", looptitle);
-	Music_Seek("title", titlemusicstart); // kick in
+	// CONS_Printf("Menu music string: %s\n", cv_menumusic.string);
+	if (cv_menumusic.string[0] == '\0') // only seek to the start if its nothing lmao
+	{
+		Music_Seek("title", titlemusicstart); // kick in
+		// always make this the title music if its off
+		Music_Remap("title", "_title");
+	}
+	else
+	{
+		Music_Remap("title", cv_menumusic.string);
+	}
 	Music_Play("title");
 }
 

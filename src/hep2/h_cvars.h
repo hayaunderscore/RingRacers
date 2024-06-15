@@ -16,8 +16,11 @@
 extern "C" {
 #endif
 
+#include "h_general.h"
+
 //Player
 extern consvar_t cv_saltyhop;
+extern consvar_t cv_menumusic;
 
 #ifdef __cplusplus
 } // extern "C"

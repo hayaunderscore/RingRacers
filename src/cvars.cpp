@@ -521,6 +521,7 @@ consvar_t cv_colorizedhudcolor = Player("colorizedhudcolor", "Skin Color").value
 // HEP2 cvars....
 // Should probably make this profile specific...
 consvar_t cv_saltyhop = Player("saltyhop", "Off").on_off();
+consvar_t cv_menumusic = Player("menumusic", ""); // none means no title music.
 
 //
 // Server local, also available on dedicated servers.

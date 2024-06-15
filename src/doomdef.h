@@ -110,9 +110,6 @@ extern char logfilename[1024];
 
 #define VERSIONSTRINGW WSTRING (VERSIONSTRING)
 
-// :)
-#define HEPVSTRING "v2.1"
-
 /* A custom URL protocol for server links. */
 #define SERVER_URL_PROTOCOL "ringracers://"
 

@@ -20,6 +20,9 @@ extern "C" {
 #include "../doomdef.h"
 #include "../r_main.h"
 
+// :)
+#define HEPVSTRING "v2.2"
+
 void add_element(void **array, UINT8 *capacity, UINT8 typeSize, void *new_elem);
 
 #ifdef __cplusplus
