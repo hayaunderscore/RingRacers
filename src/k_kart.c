@@ -8567,7 +8567,7 @@ static void K_QuiteSaltyHop(player_t *player)
 			player->salty.zoffset *= FRACUNIT;
 			player->salty.momz = 0;
 		}
-		
+
 		// zoffset is back to zero...
 		if (player->salty.zoffset <= 0)
 		{
@@ -8589,7 +8589,7 @@ static void K_QuiteSaltyHop(player_t *player)
 		}
 		// Apply the z offset!
 		player->mo->spriteyoffset = player->salty.zoffset;
-		
+
 		// Stop any and all drift sounds when hopping.
 		if (S_SoundPlaying(player->mo, sfx_screec))
 			S_StopSoundByID(player->mo, sfx_screec);
@@ -9711,7 +9711,7 @@ void K_KartPlayerThink(player_t *player, ticcmd_t *cmd)
 		// S_StartSound(NULL, sfx_s26d);
 		P_DamageMobj(player->mo, NULL, NULL, 1, DMG_INSTAKILL);
 	}
-	
+
 	// update salty hop
 	K_QuiteSaltyHop(player);
 }

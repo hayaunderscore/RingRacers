@@ -16,6 +16,7 @@
 extern "C" {
 #endif
 
+<<<<<<< HEAD
 #include "h_general.h"
 
 //Player

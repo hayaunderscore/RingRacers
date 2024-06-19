@@ -51,7 +51,7 @@ menuitem_t OPTIONS_Noire[] =
 		
 	{IT_HEADER, "Visuals...", NULL,
 		NULL, {NULL}, 0, 0},
-		
+
 	{IT_STRING | IT_CVAR, "Visual Hopping", "Do a funny hop!",
 		NULL, {.cvar = &cv_saltyhop}, 0, 0},
 };
