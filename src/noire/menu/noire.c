@@ -49,6 +49,12 @@ menuitem_t OPTIONS_Noire[] =
 	{IT_STRING | IT_CVAR | IT_CV_STRING, "Title Screen Music", "Music lump to replace Fluvial Beat Deposits on the title screen.",
 		NULL, {.cvar = &cv_menumusic}, 0, 0},
 		
+	{IT_STRING | IT_CVAR, "Final Rank Intermissions", "Toggles the ability to use separate intermission music lumps based on your final rank.",
+		NULL, {.cvar = &cv_postracemusic}, 0, 0},
+		
+	{IT_STRING | IT_CVAR, "Finish Line Voices", "Plays the win/lose voiceline on race finish!",
+		NULL, {.cvar = &cv_postracevoices}, 0, 0},
+		
 	{IT_HEADER, "Visuals...", NULL,
 		NULL, {NULL}, 0, 0},
 

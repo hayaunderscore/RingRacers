@@ -1056,11 +1056,7 @@ struct player_t
 
 	tic_t darkness_start;
 	tic_t darkness_end;
-<<<<<<< HEAD
-	
-=======
 
->>>>>>> idk/idk
 	saltyhop_t salty;
 };
 

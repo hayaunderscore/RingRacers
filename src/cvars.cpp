@@ -523,6 +523,11 @@ consvar_t cv_colorizedhudcolor = Player("colorizedhudcolor", "Skin Color").value
 consvar_t cv_saltyhop = Player("saltyhop", "Off").on_off();
 consvar_t cv_menumusic = Player("menumusic", ""); // none means no title music.
 
+// post race stuff
+consvar_t cv_postracemusic = Player("postracemusic", "Off").on_off(); // classic srb2k style post race moosic, 2pac and practice
+consvar_t cv_postracejingles = Player("postracejingles", "Off").on_off(); // mean bean
+consvar_t cv_postracevoices = Player("postracevoices", "Off").on_off(); // I can't lose here!
+
 //
 // Server local, also available on dedicated servers.
 // Usually saved, not sycned though...

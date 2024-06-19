@@ -16,12 +16,16 @@
 extern "C" {
 #endif
 
-<<<<<<< HEAD
 #include "h_general.h"
 
 //Player
 extern consvar_t cv_saltyhop;
+
+// Music related stuff
 extern consvar_t cv_menumusic;
+extern consvar_t cv_postracemusic;
+extern consvar_t cv_postracejingles;
+extern consvar_t cv_postracevoices;
 
 #ifdef __cplusplus
 } // extern "C"
