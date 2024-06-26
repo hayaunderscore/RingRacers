@@ -2958,6 +2958,7 @@ boolean P_ProcessSpecial(activator_t *activator, INT16 special, INT32 *args, cha
 								camera[i].z += z;
 								camera[i].subsector = R_PointInSubsector(camera[i].x, camera[i].y);
 								R_RelativeTeleportViewInterpolation(i, x, y, z, 0);
+								R_ResetViewInterpolation(i + 1); // reset view interp as well
 							}
 						}
 					}
@@ -2974,8 +2975,8 @@ boolean P_ProcessSpecial(activator_t *activator, INT16 special, INT32 *args, cha
 					angle = (args[1] & TMT_KEEPANGLE) ? mo->angle : dest->angle;
 					silent = !!(args[1] & TMT_SILENT);
 					keepmomentum = !!(args[1] & TMT_KEEPMOMENTUM);
-
 					P_Teleport(mo, dest->x, dest->y, dest->z, angle, !silent, keepmomentum);
+
 
 					if (!silent)
 						S_StartSound(dest, sfx_mixup); // Play the 'bowrwoosh!' sound

@@ -11,8 +11,28 @@
 #include "../n_menu.h"
 #include "../n_cvar.h"
 #include "../../hep2/h_cvars.h"
+#include "../../hep2/h_general.h"
 #include "../../d_main.h"
 #include "../../v_video.h"
+
+static void confirm_warning(INT32 choice)
+{
+	if (choice == MA_YES)
+	{
+		CV_StealthSet(&cv_cheatywarning, "On");
+		M_SetupNextMenu(&OPTIONS_CheatyDef, false);
+	}
+}
+
+static void M_CheatyWarning(INT32 choice)
+{
+	(void)choice;
+	
+	if (!cv_cheatywarning.value)
+		M_StartMessage("Forbidden territory!", M_GetText("Password spoilers ahead!\n\nIf you want to figure out the passwords yourself, please refrain from using this menu. Otherwise, if you're sure, go on right ahead.\n\n\x85This warning will not appear again when accepted,\n\x85so choose wisely!"), confirm_warning, MM_YESNO, "I accept", "I do not");
+	else
+		M_SetupNextMenu(&OPTIONS_CheatyDef, false);
+}
 
 menuitem_t OPTIONS_Noire[] =
 {
@@ -60,6 +80,12 @@ menuitem_t OPTIONS_Noire[] =
 
 	{IT_STRING | IT_CVAR, "Visual Hopping", "Do a funny hop!",
 		NULL, {.cvar = &cv_saltyhop}, 0, 0},
+		
+	{IT_SPACE | IT_DYBIGSPACE, NULL,  NULL,
+		NULL, {NULL}, 0, 0},
+		
+	{IT_STRING | IT_LINKTEXT | IT_CALL, "Cheaty...", "Options locked by passwords. Spoilers!",
+		NULL, {.routine = M_CheatyWarning}, 0, 0},
 };
 
 void ColorHUD_OnChange(void)

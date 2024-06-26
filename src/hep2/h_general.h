@@ -23,6 +23,8 @@ extern "C" {
 // :)
 #define HEPVSTRING "v2.2"
 
+extern menu_t OPTIONS_CheatyDef;
+
 void add_element(void **array, UINT8 *capacity, UINT8 typeSize, void *new_elem);
 
 #ifdef __cplusplus

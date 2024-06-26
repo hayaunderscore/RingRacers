@@ -528,6 +528,8 @@ consvar_t cv_postracemusic = Player("postracemusic", "Off").on_off(); // classic
 consvar_t cv_postracejingles = Player("postracejingles", "Off").on_off(); // mean bean
 consvar_t cv_postracevoices = Player("postracevoices", "Off").on_off(); // I can't lose here!
 
+consvar_t cv_cheatywarning = Player("cheatywarning", "Off").on_off(); // Want some passwords?
+
 //
 // Server local, also available on dedicated servers.
 // Usually saved, not sycned though...
@@ -957,8 +959,8 @@ consvar_t cv_palettenum = PlayerCheat("palettenum", "0").values(CV_Unsigned).onc
 extern CV_PossibleValue_t renderhitbox_cons_t[];
 consvar_t cv_renderhitbox = PlayerCheat("renderhitbox", "Off").values(renderhitbox_cons_t).description("Show hitboxes around objects");
 
-consvar_t cv_bighead = Player("bighead", "Off").dont_save().values(CV_OnOff).flags(CV_NOSHOWHELP).description("Works out at the library");
-consvar_t cv_shittysigns = Player("shittysigns", "Off").dont_save().values(CV_OnOff).flags(CV_NOSHOWHELP).description("It's better because it's worse");
+consvar_t cv_bighead = Player("bighead", "Off").values(CV_OnOff).description("Works out at the library");
+consvar_t cv_shittysigns = Player("shittysigns", "Off").values(CV_OnOff).description("It's better because it's worse");
 consvar_t cv_tastelesstaunts = Player("tastelesstaunts", "Off").values(CV_OnOff).description("Universally hated in dev");
 consvar_t cv_4thgear = UnsavedNetVar("4thgear", "Off").values(CV_OnOff).flags(CV_NOSHOWHELP).description("Surpassing your limits!");
 consvar_t cv_levelskull = UnsavedNetVar("levelskull", "Off").values(CV_OnOff).flags(CV_NOSHOWHELP).description("What Storm Rig looked like 2 months before 2.0");

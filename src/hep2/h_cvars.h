@@ -27,6 +27,9 @@ extern consvar_t cv_postracemusic;
 extern consvar_t cv_postracejingles;
 extern consvar_t cv_postracevoices;
 
+// Warning
+extern consvar_t cv_cheatywarning;
+
 #ifdef __cplusplus
 } // extern "C"
 #endif
