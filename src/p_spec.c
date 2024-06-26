@@ -2951,7 +2951,7 @@ boolean P_ProcessSpecial(activator_t *activator, INT16 special, INT32 *args, cha
 
 						for (i = 0; i <= r_splitscreen; i++)
 						{
-							if (mo->player == &players[displayplayers[i]] && camera[i].chase)
+							if (mo->player == &players[displayplayers[i]] && camera[i].chase && mo->player->exiting == 0)
 							{
 								camera[i].x += x;
 								camera[i].y += y;
