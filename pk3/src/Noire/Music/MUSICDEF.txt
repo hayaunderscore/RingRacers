@@ -2,18 +2,24 @@ Lump RACELS
 Title = Hit 'Em Up
 Author = 2Pac
 Important = True
-Volume = 200
+Volume = 180
 
 Lump RACEWN
 Title = Practice
 Author = DEKU
 Source = Sora
 Important = True
-Volume = 120
+Volume = 100
 
 Lump RACENC
 Title = Results
 Author = Yumiko Kanki, Naoto Ishida
 Source = F-Zero
 Important = True
-Volume = 260
+Volume = 230
+
+Lump 4MAT
+Title = L.F.F
+Author = 4mat
+Important = True
+Volume = 380

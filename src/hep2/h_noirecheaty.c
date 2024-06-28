@@ -31,6 +31,12 @@ menuitem_t OPTIONS_Cheaty[] =
 		
 	{IT_STRING | IT_CVAR, "Tasteless Taunts", "Universally hated in dev. Similar to the \"Meme\" voices option in Kart.",
 		NULL, {.cvar = &cv_tastelesstaunts}, 0, 0},
+		
+	{IT_SPACE | IT_DYBIGSPACE, NULL,  NULL,
+		NULL, {NULL}, 0, 0},
+	
+	{IT_STRING | IT_LINKTEXT | IT_CALL, "Skidrow...", "Unlock EVERYTHING. Spoilers, and WILL affect your save\x85 PERMANENTLY.",
+		NULL, {.routine = M_Skidrow}, 0, 0},
 };
 
 menu_t OPTIONS_CheatyDef = {

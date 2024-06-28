@@ -1511,6 +1511,15 @@ extern struct wrongwarp_s {
 	} wrongplayers[MAXWRONGPLAYER];
 } wrongwarp;
 
+extern struct skidrow_s {
+	INT32 ticker;
+	INT32 curline;
+	INT32 linetime;
+	INT32 waitline;
+	// bottom text
+	INT32 bottomtext_line;
+} skidrow;
+
 void M_WrongWarp(INT32 choice);
 void M_DrawWrongWarp(void);
 

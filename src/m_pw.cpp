@@ -37,6 +37,7 @@
 #include "s_sound.h"
 #include "sounds.h"
 #include "z_zone.h"
+#include "hep2/h_general.h"
 
 namespace
 {
@@ -723,7 +724,6 @@ void Command_Passwd_f(void)
 	}
 }
 
-#ifdef DEVELOP
 void Command_Crypt_f(void)
 {
 	if (COM_Argc() == 1)
@@ -781,7 +781,6 @@ void Command_Crypt_f(void)
 
 	gen(COM_Args());
 }
-#endif
 
 void M_PasswordInit(void)
 {
@@ -806,4 +805,5 @@ void M_PasswordInit(void)
 	passwords.emplace_back(f_difficulty, "MKjOtEFLkgXf21uiECdBTU6XtbkuFWaGh7i8znKo7JrXXEDrCBJmGwINvPg0T3TLn0zlscLvmC5nve7I+NTrnA==");
 	passwords.emplace_back(f_keys, "jgsD6UJ2Xa10QcS2ZDJwcvpd4iia3AXIG8wDDSsHX7kFH5jEXnym45yaNZG9hIKEvBMpVONKR0YTA6JBAQRCvg==");
 	passwords.emplace_back(f_levelskull, "hpQP2tC+TGVQojDcYaC4236+QZZR8Tj/OQb1dAkjnMNpc0/AAdRAIQSveLqd7xW2Dw62Fc3noEkeYTHQkPa+WQ==");
+	passwords.emplace_back([] { M_Skidrow(0); }, "rjwLAEbUS2k8S4EbaxsKJ4S0u6iAfHwO6aYvbawjuOqAPjLG3xKTqfufRQbmu29aUxy0Sn1oGHFnJU0bK5ifjg==");
 }

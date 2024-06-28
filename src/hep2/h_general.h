@@ -24,6 +24,8 @@ extern "C" {
 #define HEPVSTRING "v2.2"
 
 extern menu_t OPTIONS_CheatyDef;
+extern menu_t MISC_SkidrowDef;
+void M_Skidrow(INT32 choice);
 
 void add_element(void **array, UINT8 *capacity, UINT8 typeSize, void *new_elem);
 

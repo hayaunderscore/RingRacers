@@ -1774,6 +1774,12 @@ INT32 V_DanceYOffset(INT32 counter)
 	return abs(step - (duration / 2)) - (duration / 4);
 }
 
+// Yes yes let's use timefrac to get interp shit
+INT32 V_DanceYOffsetBig(INT32 counter)
+{
+	return FSIN((ANG15 / FRACUNIT)*(I_GetTime()*FRACUNIT + g_time.timefrac + counter*FRACUNIT))*24;
+}
+
 static boolean V_CharacterValid(font_t *font, int c)
 {
 	return (c >= 0 && c < font->size && font->font[c] != NULL);
@@ -2355,6 +2361,17 @@ static void V_GetFontSpecification(int fontno, INT32 flags, fontspec_t *result)
 		case LSHI_FONT:
 		case LSLOW_FONT:
 			result->spacew = 10;
+			switch (spacing)
+			{
+				case V_MONOSPACE:
+					result->spacew = 22;
+					/* FALLTHRU */
+				case V_OLDSPACING:
+					result->chw    = 22;
+					break;
+				case V_6WIDTHSPACE:
+					result->spacew = 6;
+			}
 			break;
 		case OPPRF_FONT:
 			result->spacew = 5;
@@ -2549,6 +2566,7 @@ void V_DrawStringScaled(
 	boolean notcolored;
 
 	boolean   dance;
+	boolean   dancebig;
 	boolean nodanceoverride;
 	INT32     dancecounter;
 
@@ -2564,7 +2582,8 @@ void V_DrawStringScaled(
 	uppercase  = ((flags & V_FORCEUPPERCASE) == V_FORCEUPPERCASE);
 	flags	&= ~(V_FLIP);/* These two (V_FORCEUPPERCASE) share a bit. */
 
-	dance           = (flags & V_STRINGDANCE) != 0;
+	dance           = (flags & (V_STRINGDANCE|V_STRINGDANCEBIG)) != 0;
+	dancebig		= (flags & V_STRINGDANCEBIG) != 0;
 	nodanceoverride = !dance;
 	dancecounter    = 0;
 
@@ -2661,6 +2680,10 @@ void V_DrawStringScaled(
 				{
 					dance = true;
 				}
+				else if (c == V_STRINGDANCEBIG)
+				{
+					dancebig = true;
+				}
 				else if (cx < right)
 				{
 					if (uppercase)
@@ -2684,6 +2707,11 @@ void V_DrawStringScaled(
 					if (dance)
 					{
 						cyoff = V_DanceYOffset(dancecounter) * FRACUNIT;
+					}
+					
+					if (dancebig)
+					{
+						cyoff = V_DanceYOffsetBig(dancecounter);
 					}
 
 					if (( c & 0xB0 ) & 0x80) // button prompts
@@ -2841,7 +2869,7 @@ fixed_t V_StringScaledWidth(
 				cx  =   0;
 				break;
 			default:
-				if (( c & 0xF0 ) == 0x80 || c == V_STRINGDANCE)
+				if (( c & 0xF0 ) == 0x80 || c == V_STRINGDANCE || c == V_STRINGDANCEBIG)
 					continue;
 
 				if (( c & 0xB0 ) & 0x80)

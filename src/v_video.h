@@ -109,6 +109,7 @@ void V_CubeApply(RGBA_t *input);
 #define V_SCREENMASK          0x0000000F
 
 #define V_STRINGDANCE        0x00000002 // (strings/characters only) funny undertale
+#define V_STRINGDANCEBIG     0x00000004 // (strings/characters only) funny undertale.... TWO!
 #define V_VFLIP              0x00000010 // (patches only) Vertical flip
 
 // flags hacked in scrn (not supported by all functions (see src))

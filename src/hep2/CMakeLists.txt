@@ -2,4 +2,5 @@
 target_sources(SRB2SDL2 PRIVATE
 	h_func.c
 	h_noirecheaty.c
+	h_devintro.cpp
 )
