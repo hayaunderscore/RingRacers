@@ -107,7 +107,7 @@ void M_Skidrow(INT32 choice)
 // :-)
 static std::string SkidrowText[] =
 {
-	"\" KART ROW \"",
+	"* KART ROW *",
 	"PRESENTS",
 	"ANOTHER LIGHTSPEED RELEASE",
 	"",
@@ -274,37 +274,6 @@ static void M_DrawSkidrow(void)
 	int i;
 	int yshift = 0;
 	
-	// draw all original text
-	for (i = 0; i < skidrow.curline; i++)
-	{
-		using srb2::Draw;
-
-		Draw::TextElement text(SkidrowText[i]);
-		text.font(Draw::Font::kMedium);
-		
-		Draw(160, 10+yshift).flags(V_MONOSPACE|SkidrowTextColors[i]).align(Draw::Align::kCenter).text(text);
-		
-		yshift += 10;
-	}
-	
-	// draw current text
-	using srb2::Draw;
-	
-	std::string msg = SkidrowText[skidrow.curline];
-	UINT8 sublen = skidrow.linetime;
-	std::string submsg = msg.substr(0, sublen);
-	
-	Draw::TextElement text(submsg);
-	text.font(Draw::Font::kMedium);
-	
-	// We don't exactly want auto alignment here. Do alignment ourselves!
-#define V_MediumStringWidth( string,option ) \
-	V__IntegerStringWidth ( FRACUNIT,option,MED_FONT,string )
-	
-	Draw(160-(V_MediumStringWidth(msg.c_str(), V_MONOSPACE)/2)-0.5, 10+yshift).flags(V_MONOSPACE|SkidrowTextColors[skidrow.curline]).text(text);
-	
-#undef V_MediumStringWidth
-
 	// Moved here for interp
 	fixed_t frac = R_UsingFrameInterpolation() ? renderdeltatics : FRACUNIT;
 	
@@ -319,10 +288,43 @@ static void M_DrawSkidrow(void)
 	} 
 	else
 	{
-		bottomtext_x -= 8 * frac; // fast
+		bottomtext_x -= 6 * frac; // fast
 	}
 
-	V_DrawLSTitleLowString(bottomtext_x >> FRACBITS, BASEVIDHEIGHT-60, V_STRINGDANCEBIG|V_MONOSPACE, SkidrowBottomText[skidrow.bottomtext_line].c_str());
+	V_DrawLSTitleLowString(bottomtext_x >> FRACBITS, BASEVIDHEIGHT/2 - 15, V_SINESCROLL|V_MONOSPACE, SkidrowBottomText[skidrow.bottomtext_line].c_str());
+	
+	// center
+	int centerx = (BASEVIDHEIGHT/2)-(skidrow_length*10)/2;
+	// draw all original text
+	for (i = 0; i < skidrow.curline; i++)
+	{
+		using srb2::Draw;
+
+		Draw::TextElement text(SkidrowText[i]);
+		text.font(Draw::Font::kSkidrow);
+		
+		Draw(160, centerx+yshift).flags(V_MONOSPACE|SkidrowTextColors[i]).align(Draw::Align::kCenter).text(text);
+		
+		yshift += 6;
+	}
+	
+	// draw current text
+	using srb2::Draw;
+	
+	std::string msg = SkidrowText[skidrow.curline];
+	UINT8 sublen = skidrow.linetime;
+	std::string submsg = msg.substr(0, sublen);
+	
+	Draw::TextElement text(submsg);
+	text.font(Draw::Font::kSkidrow);
+	
+	// We don't exactly want auto alignment here. Do alignment ourselves!
+#define V_MediumStringWidth( string,option ) \
+	V__IntegerStringWidth ( FRACUNIT,option,MED_FONT,string )
+	
+	Draw(160-(V_MediumStringWidth(msg.c_str(), V_MONOSPACE)/2)-0.5, centerx+yshift).flags(V_MONOSPACE|SkidrowTextColors[skidrow.curline]).text(text);
+	
+#undef V_MediumStringWidth
 }
 
 menu_t MISC_SkidrowDef = {

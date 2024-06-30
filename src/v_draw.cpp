@@ -21,6 +21,7 @@
 #include "v_video.h"
 #include "w_wad.h"
 #include "z_zone.h"
+#include "d_main.h"
 
 // Noire
 #include "noire/n_hud.h"
@@ -323,6 +324,11 @@ int Draw::font_to_fontno(Font font)
 
 	case Font::kRollingNum4P:
 		return RO4NUM_FONT;
+		
+	case Font::kSkidrow: // sneaky....
+		if (noire_smfont)
+			return SKIDROW_FONT;
+		return MED_FONT;
 	}
 
 	return TINY_FONT;

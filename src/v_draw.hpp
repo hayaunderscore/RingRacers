@@ -46,6 +46,7 @@ public:
 		kMedium,
 		kRollingNum,
 		kRollingNum4P,
+		kSkidrow,
 	};
 
 	enum class Align

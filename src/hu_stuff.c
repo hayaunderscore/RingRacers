@@ -360,6 +360,14 @@ void HU_Init(void)
 		ADIM (NUM);
 		PR   ("PINGF");
 		REG;
+		
+		// AAAAAAAAAAAA
+		if (noire_smfont)
+		{
+			ADIM (SKIDROW);
+			PR   ("SKRFU");
+			REG;
+		}
 
 #undef  REG
 #undef  DIG

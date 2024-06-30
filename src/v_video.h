@@ -109,7 +109,6 @@ void V_CubeApply(RGBA_t *input);
 #define V_SCREENMASK          0x0000000F
 
 #define V_STRINGDANCE        0x00000002 // (strings/characters only) funny undertale
-#define V_STRINGDANCEBIG     0x00000004 // (strings/characters only) funny undertale.... TWO!
 #define V_VFLIP              0x00000010 // (patches only) Vertical flip
 
 // flags hacked in scrn (not supported by all functions (see src))
@@ -184,6 +183,8 @@ void V_CubeApply(RGBA_t *input);
 
 #define V_NOSCALESTART       0x40000000 // don't scale x, y, start coords
 #define V_SPLITSCREEN        0x80000000 // Add half of screen width or height automatically depending on player number
+
+#define V_SINESCROLL         0xA0000000 // (strings/patches) Amiga sinescroll
 
 UINT32 V_GetHUDTranslucency(INT32 scrn);
 
@@ -264,6 +265,7 @@ void V_DrawPromptBack(INT32 boxheight, INT32 color);
 	(V_StringScaledWidth(scale,FRACUNIT,FRACUNIT,option,font,string) / FRACUNIT)
 
 INT32 V_DanceYOffset(INT32 counter);
+INT32 V_DanceYOffsetBig(INT32 counter);
 
 // draw a single character
 void V_DrawCharacterScaled(fixed_t x, fixed_t y, fixed_t scale, INT32 flags, int font, int c, UINT8 *colormap);

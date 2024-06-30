@@ -782,6 +782,8 @@ static UINT32 V_GetAlphaLevel(INT32 scrn)
 	}
 }
 
+INT32 sinescrollcounter = 0;
+
 // Draws a patch scaled to arbitrary size.
 void V_DrawStretchyFixedPatch(fixed_t x, fixed_t y, fixed_t pscale, fixed_t vscale, INT32 scrn, patch_t *patch, const UINT8 *colormap)
 {
@@ -790,6 +792,7 @@ void V_DrawStretchyFixedPatch(fixed_t x, fixed_t y, fixed_t pscale, fixed_t vsca
 	fixed_t vdup;
 	INT32 dupx, dupy;
 	fixed_t pwidth; // patch width
+	int i = 0; // sinescroll
 
 	const cliprect_t *clip = V_GetClipRect();
 
@@ -938,13 +941,13 @@ void V_DrawStretchyFixedPatch(fixed_t x, fixed_t y, fixed_t pscale, fixed_t vsca
 
 	auto builder = g_2d.begin_quad();
 	builder
-		.patch(patch)
-		.rect(fx, fy, fx2 - fx, fy2 - fy)
-		.flip((scrn & V_FLIP) > 0)
-		.vflip((scrn & V_VFLIP) > 0)
-		.color(1, 1, 1, falpha)
-		.blend(blend)
-		.colormap(colormap);
+	.patch(patch)
+	.rect(fx, fy, fx2 - fx, fy2 - fy)
+	.flip((scrn & V_FLIP) > 0)
+	.vflip((scrn & V_VFLIP) > 0)
+	.color(1, 1, 1, falpha)
+	.blend(blend)
+	.colormap(colormap);
 
 	if (clip && clip->enabled)
 	{
@@ -964,6 +967,21 @@ void V_DrawCroppedPatch(fixed_t x, fixed_t y, fixed_t pscale, INT32 scrn, patch_
 	y -= sy;
 
 	V_DrawStretchyFixedPatch(x, y, pscale, pscale, scrn, patch, NULL);
+
+	cliprect = oldClip;
+}
+
+// erm.... no colormap???
+void V_DrawCroppedPatchColormap(fixed_t x, fixed_t y, fixed_t pscale, INT32 scrn, patch_t *patch, fixed_t sx, fixed_t sy, fixed_t w, fixed_t h, const UINT8 *colormap)
+{
+	cliprect_t oldClip = cliprect;
+
+	V_SetClipRect(x, y, w, h, scrn);
+	
+	x -= sx;
+	y -= sy;
+
+	V_DrawStretchyFixedPatch(x, y, pscale, pscale, scrn, patch, colormap);
 
 	cliprect = oldClip;
 }
@@ -1774,10 +1792,13 @@ INT32 V_DanceYOffset(INT32 counter)
 	return abs(step - (duration / 2)) - (duration / 4);
 }
 
+// no hints here!
+constexpr int FSIN_MULTIPLIER = (ANG1*2.5) / FRACUNIT;
+
 // Yes yes let's use timefrac to get interp shit
 INT32 V_DanceYOffsetBig(INT32 counter)
 {
-	return FSIN((ANG15 / FRACUNIT)*(I_GetTime()*FRACUNIT + g_time.timefrac + counter*FRACUNIT))*24;
+	return FSIN(FSIN_MULTIPLIER*((I_GetTime()*FRACUNIT + g_time.timefrac)*4 + ((counter*FRACUNIT)+g_time.timefrac)/4))*70;
 }
 
 static boolean V_CharacterValid(font_t *font, int c)
@@ -2328,6 +2349,7 @@ static void V_GetFontSpecification(int fontno, INT32 flags, fontspec_t *result)
 					break;
 			}
 			break;
+		case SKIDROW_FONT:
 		case MED_FONT:
 			result->chw    = 6;
 			result->spacew = 6;
@@ -2457,6 +2479,7 @@ static void V_GetFontSpecification(int fontno, INT32 flags, fontspec_t *result)
 			else
 				result->dim_fn = BunchedCharacterDim;
 			break;
+		case SKIDROW_FONT:
 		case MED_FONT:
 			result->dim_fn = FixedCharacterDim;
 			break;
@@ -2475,7 +2498,7 @@ static void V_GetFontSpecification(int fontno, INT32 flags, fontspec_t *result)
 		case LSHI_FONT:
 		case LSLOW_FONT:
 			if (result->chw)
-				result->dim_fn = FixedCharacterDim;
+				result->dim_fn = CenteredCharacterDim;
 			else
 				result->dim_fn = LSTitleCharacterDim;
 			break;
@@ -2582,8 +2605,8 @@ void V_DrawStringScaled(
 	uppercase  = ((flags & V_FORCEUPPERCASE) == V_FORCEUPPERCASE);
 	flags	&= ~(V_FLIP);/* These two (V_FORCEUPPERCASE) share a bit. */
 
-	dance           = (flags & (V_STRINGDANCE|V_STRINGDANCEBIG)) != 0;
-	dancebig		= (flags & V_STRINGDANCEBIG) != 0;
+	dance           = (flags & V_STRINGDANCE) != 0;
+	dancebig		= (flags & V_SINESCROLL) != 0;
 	nodanceoverride = !dance;
 	dancecounter    = 0;
 
@@ -2680,10 +2703,6 @@ void V_DrawStringScaled(
 				{
 					dance = true;
 				}
-				else if (c == V_STRINGDANCEBIG)
-				{
-					dancebig = true;
-				}
 				else if (cx < right)
 				{
 					if (uppercase)
@@ -2710,9 +2729,7 @@ void V_DrawStringScaled(
 					}
 					
 					if (dancebig)
-					{
 						cyoff = V_DanceYOffsetBig(dancecounter);
-					}
 
 					if (( c & 0xB0 ) & 0x80) // button prompts
 					{
@@ -2784,12 +2801,31 @@ void V_DrawStringScaled(
 						fixed_t patchxofs = SHORT (font->font[c]->leftoffset) * dupx * scale;
 						cw = SHORT (font->font[c]->width) * dupx;
 						cxoff = (*fontspec.dim_fn)(scale, fontspec.chw, hchw, dupx, &cw);
-						V_DrawFixedPatch(cx + cxoff + patchxofs, cy + cyoff, scale,
-								flags, font->font[c], colormap);
+						if (!(flags & V_SINESCROLL))
+							V_DrawFixedPatch(cx + cxoff + patchxofs, cy + cyoff, scale,
+									flags, font->font[c], colormap);
+						else
+						{
+							// sinescroll has different logic
+							// for every pixel in the patch, draw it separately
+							int i = 0;
+							for (i = 0; i < font->font[c]->width; i++)
+							{
+								dancecounter++;
+								cyoff = V_DanceYOffsetBig(dancecounter);
+								V_DrawCroppedPatchColormap(cx + cxoff + patchxofs + (FRACUNIT*i) + BASEVIDWIDTH/2*FRACUNIT, cy + cyoff, scale, flags, font->font[c],
+									(FRACUNIT*i), 0, FRACUNIT, font->font[c]->height*FRACUNIT, colormap);
+							}
+						}
 						cx += cw;
 					}
 					else
+					{
 						cx += fontspec.spacew;
+						// also adjust dancecounter if in sinescroll mode
+						if (flags & V_SINESCROLL)
+							dancecounter += fontspec.spacew / scale;
+					}
 				}
 		}
 	}
@@ -2869,7 +2905,7 @@ fixed_t V_StringScaledWidth(
 				cx  =   0;
 				break;
 			default:
-				if (( c & 0xF0 ) == 0x80 || c == V_STRINGDANCE || c == V_STRINGDANCEBIG)
+				if (( c & 0xF0 ) == 0x80 || c == V_STRINGDANCE || c == V_SINESCROLL)
 					continue;
 
 				if (( c & 0xB0 ) & 0x80)
