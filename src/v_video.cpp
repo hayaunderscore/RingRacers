@@ -726,6 +726,48 @@ void V_RestoreClipRect(const cliprect_t *copy)
 	cliprect = *copy;
 }
 
+static sinescroll_t amiga = {0};
+
+sinescroll_t *V_GetAmigaEffect(void)
+{
+	if (amiga.enabled == false)
+	{
+		return NULL;
+	}
+
+	return &amiga;
+}
+
+void V_SetAmigaEffect(angle_t angle, INT32 countermul, INT32 multiplier)
+{
+	amiga.angle = angle;
+	amiga.countermul = countermul;
+	amiga.mul = multiplier;
+	amiga.counter = 0;
+	amiga.enabled = true;
+}
+
+void V_ClearAmigaEffect(void)
+{
+	amiga.counter = 0;
+	amiga.enabled = false;
+}
+
+void V_ResetAmigaCounter(void)
+{
+	amiga.counter = 0;
+}
+
+void V_SaveAmigaEffect(sinescroll_t *copy)
+{
+	*copy = amiga;
+}
+
+void V_RestoreAmigaEffect(const sinescroll_t *copy)
+{
+	amiga = *copy;
+}
+
 static UINT8 hudplusalpha[11]  = { 10,  8,  6,  4,  2,  0,  0,  0,  0,  0,  0};
 static UINT8 hudminusalpha[11] = { 10,  9,  9,  8,  8,  7,  7,  6,  6,  5,  5};
 
@@ -785,14 +827,14 @@ static UINT32 V_GetAlphaLevel(INT32 scrn)
 INT32 sinescrollcounter = 0;
 
 // Draws a patch scaled to arbitrary size.
-void V_DrawStretchyFixedPatch(fixed_t x, fixed_t y, fixed_t pscale, fixed_t vscale, INT32 scrn, patch_t *patch, const UINT8 *colormap)
+// Moved to EX.....
+static void V_DrawStretchyFixedPatchEx(fixed_t x, fixed_t y, fixed_t pscale, fixed_t vscale, INT32 scrn, patch_t *patch, const UINT8 *colormap)
 {
 	UINT32 alphalevel, blendmode;
 
 	fixed_t vdup;
 	INT32 dupx, dupy;
 	fixed_t pwidth; // patch width
-	int i = 0; // sinescroll
 
 	const cliprect_t *clip = V_GetClipRect();
 
@@ -956,6 +998,43 @@ void V_DrawStretchyFixedPatch(fixed_t x, fixed_t y, fixed_t pscale, fixed_t vsca
 	builder.done();
 }
 
+// Draws a patch scaled to arbitrary size.
+// Affected by sinusoidal effects.
+void V_DrawStretchyFixedPatch(fixed_t x, fixed_t y, fixed_t pscale, fixed_t vscale, INT32 scrn, patch_t *patch, const UINT8 *colormap)
+{
+	sinescroll_t *sine = V_GetAmigaEffect();
+	
+	// Not enabled, so do nothing special.
+	if (!(sine && sine->enabled))
+	{
+		V_DrawStretchyFixedPatchEx(x, y, pscale, vscale, scrn, patch, colormap);
+		return;
+	}
+	
+	int i = 0;
+	cliprect_t oldClip = cliprect; // we'd want to keep this directly here
+	
+	// For each column of our patch, draw each strip separately.
+	for (i = 0; i < patch->width; i++)
+	{
+		// increment sine counter
+		sine->counter++;
+		
+		fixed_t cx = x, cy = y;
+		// the sine here
+		cy += FSIN((sine->angle >> FRACBITS)*(((I_GetTime() << FRACBITS) + g_time.timefrac)*sine->countermul + ((sine->counter << FRACBITS)+g_time.timefrac)/sine->countermul))*sine->mul;
+		
+		// set our clip rect to clip our patch
+		V_SetClipRect(cx + (FRACUNIT*i), cy, FRACUNIT, patch->height << FRACBITS, scrn);
+		// add the offset and start fucking moving
+		cx -= FRACUNIT;
+		V_DrawStretchyFixedPatchEx(cx, cy, pscale, vscale, scrn, patch, colormap);
+	}
+	
+	// see what i mean
+	cliprect = oldClip;
+}
+
 // Draws a patch cropped and scaled to arbitrary size.
 void V_DrawCroppedPatch(fixed_t x, fixed_t y, fixed_t pscale, INT32 scrn, patch_t *patch, fixed_t sx, fixed_t sy, fixed_t w, fixed_t h)
 {
@@ -966,7 +1045,7 @@ void V_DrawCroppedPatch(fixed_t x, fixed_t y, fixed_t pscale, INT32 scrn, patch_
 	x -= sx;
 	y -= sy;
 
-	V_DrawStretchyFixedPatch(x, y, pscale, pscale, scrn, patch, NULL);
+	V_DrawStretchyFixedPatchEx(x, y, pscale, pscale, scrn, patch, NULL);
 
 	cliprect = oldClip;
 }
@@ -2357,8 +2436,20 @@ static void V_GetFontSpecification(int fontno, INT32 flags, fontspec_t *result)
 		case LT_FONT:
 			result->spacew = 12;
 			break;
+		case BIGAMIGA_FONT:
+			// This is naturally monospace.
+			result->spacew = 16;
+			result->chw = 16;
 		case CRED_FONT:
 			result->spacew = 16;
+			switch (spacing)
+			{
+				case V_MONOSPACE:
+					/* FALLTHRU */
+				case V_OLDSPACING:
+					result->chw = 16;
+					break;
+			}
 			break;
 		case KART_FONT:
 			result->spacew = 3;
@@ -2587,9 +2678,9 @@ void V_DrawStringScaled(
 
 	boolean uppercase;
 	boolean notcolored;
+	boolean vflip;
 
 	boolean   dance;
-	boolean   dancebig;
 	boolean nodanceoverride;
 	INT32     dancecounter;
 
@@ -2606,13 +2697,17 @@ void V_DrawStringScaled(
 	flags	&= ~(V_FLIP);/* These two (V_FORCEUPPERCASE) share a bit. */
 
 	dance           = (flags & V_STRINGDANCE) != 0;
-	dancebig		= (flags & V_SINESCROLL) != 0;
 	nodanceoverride = !dance;
 	dancecounter    = 0;
+	vflip = (flags & V_VFLIP) != 0;
+	
+	sinescroll_t *sine = V_GetAmigaEffect();
 
 	/* Some of these flags get overloaded in this function so
 	   don't pass them on. */
 	flags &= ~(V_PARAMMASK);
+	
+	if (vflip) flags |= V_VFLIP;
 
 	if (colormap == NULL)
 	{
@@ -2727,9 +2822,6 @@ void V_DrawStringScaled(
 					{
 						cyoff = V_DanceYOffset(dancecounter) * FRACUNIT;
 					}
-					
-					if (dancebig)
-						cyoff = V_DanceYOffsetBig(dancecounter);
 
 					if (( c & 0xB0 ) & 0x80) // button prompts
 					{
@@ -2801,30 +2893,16 @@ void V_DrawStringScaled(
 						fixed_t patchxofs = SHORT (font->font[c]->leftoffset) * dupx * scale;
 						cw = SHORT (font->font[c]->width) * dupx;
 						cxoff = (*fontspec.dim_fn)(scale, fontspec.chw, hchw, dupx, &cw);
-						if (!(flags & V_SINESCROLL))
-							V_DrawFixedPatch(cx + cxoff + patchxofs, cy + cyoff, scale,
-									flags, font->font[c], colormap);
-						else
-						{
-							// sinescroll has different logic
-							// for every pixel in the patch, draw it separately
-							int i = 0;
-							for (i = 0; i < font->font[c]->width; i++)
-							{
-								dancecounter++;
-								cyoff = V_DanceYOffsetBig(dancecounter);
-								V_DrawCroppedPatchColormap(cx + cxoff + patchxofs + (FRACUNIT*i) + BASEVIDWIDTH/2*FRACUNIT, cy + cyoff, scale, flags, font->font[c],
-									(FRACUNIT*i), 0, FRACUNIT, font->font[c]->height*FRACUNIT, colormap);
-							}
-						}
+						V_DrawFixedPatch(cx + cxoff + patchxofs, cy + cyoff, scale,
+								flags, font->font[c], colormap);
 						cx += cw;
 					}
 					else
 					{
 						cx += fontspec.spacew;
 						// also adjust dancecounter if in sinescroll mode
-						if (flags & V_SINESCROLL)
-							dancecounter += fontspec.spacew / scale;
+						if (sine && sine->enabled)
+							sine->counter += fontspec.spacew / dupx / scale;
 					}
 				}
 		}
@@ -2905,7 +2983,7 @@ fixed_t V_StringScaledWidth(
 				cx  =   0;
 				break;
 			default:
-				if (( c & 0xF0 ) == 0x80 || c == V_STRINGDANCE || c == V_SINESCROLL)
+				if (( c & 0xF0 ) == 0x80 || c == V_STRINGDANCE)
 					continue;
 
 				if (( c & 0xB0 ) & 0x80)

@@ -23,3 +23,9 @@ Title = L.F.F
 Author = 4mat
 Important = True
 Volume = 380
+
+Lump KYGN
+Title = Monday
+Author = Random Voice
+Important = True
+Volume = 330

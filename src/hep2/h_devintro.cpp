@@ -7,7 +7,7 @@
 // See the 'LICENSE' file for more details.
 //-----------------------------------------------------------------------------
 /// \file  hep2/h_devintro.cpp
-/// \brief DEVMODE password intro screen :-)
+/// \brief Skidrow devmode screen
 
 #include <algorithm>
 #include <array>
@@ -43,66 +43,9 @@ static menuitem_t MISC_SkidrowMenu[] =
 	{IT_NOTHING, NULL, NULL, NULL, {NULL}, 0, 0},
 };
 
-void f_devmode()
-{
-	INT32 i;
-
-	if (modifiedgame)
-		return;
-
-	// Just unlock all the things.
-	for (i = 0; i < MAXUNLOCKABLES; i++)
-	{
-		if (!unlockables[i].conditionset)
-			continue;
-		gamedata->unlocked[i] = true;
-	}
-
-	// Unlock all hidden levels.
-	for (i = 0; i < nummapheaders; i++)
-	{
-		mapheaderinfo[i]->records.mapvisited = MV_MAX;
-	}
-
-	gamedata->gonerlevel = GDGONER_DONE;
-	gamedata->sealedswapalerted = true;
-
-	// You have been warned!
-	G_SaveGameData();
-}
-
-static int bottomtext_x = 320*FRACUNIT;
-static int skidrow_tick_frac = 0;
-patch_t* checkerpatches[2];
-
-static void M_SkidrowAccept(INT32 choice)
-{
-	if (choice != MA_YES)
-		return;
-
-	skidrow.ticker = 0;
-	skidrow.curline = 0;
-	skidrow.linetime = 0;
-	skidrow.waitline = 0;
-	skidrow.bottomtext_line = 0;
-	bottomtext_x = 320*FRACUNIT;
-	skidrow_tick_frac = 0;
-	checkerpatches[0] = static_cast<patch_t *>(W_CachePatchName("~027", PU_CACHE));
-	checkerpatches[1] = static_cast<patch_t *>(W_CachePatchName("~020", PU_CACHE));
-
-	M_SetupNextMenu(&MISC_SkidrowDef, false);
-
-	// Done here to avoid immediate music credit
-	Music_Remap("menu_nocred", "4MAT");
-	Music_Play("menu_nocred");
-	
-	f_devmode();
-}
-
-void M_Skidrow(INT32 choice)
-{
-	M_StartMessage("AAAAACK!", M_GetText("This option will unlock\x85 EVERYTHING.\n\nAll unlockables are permanently saved to your save file. If you still want to unlock stuff, PLEASE do not proceed.\n\nYou have been warned."), M_SkidrowAccept, MM_YESNO, "Start cracktro", "Nevermind");
-}
+int bottomtext_x = 320*FRACUNIT;
+int skidrow_tick_frac = 0;
+patch_t* checkerpatches[4];
 
 // :-)
 static std::string SkidrowText[] =
@@ -170,7 +113,7 @@ static std::string SkidrowBottomText[] =
 // Space background
 static void M_DrawSkidrowBack(void)
 {
-	INT32 x = 0, y = 0, i = 0, k = 0;
+	INT32 x = 0, y = 0, i = 0;
 	
 	// black bg ofc
 	V_DrawFill(0, 0, BASEVIDWIDTH, BASEVIDHEIGHT, 31);
@@ -274,10 +217,13 @@ static void M_DrawSkidrow(void)
 	int i;
 	int yshift = 0;
 	
+#define V_BigAmigaStringWidth( string,option ) \
+	V__IntegerStringWidth ( FRACUNIT,option,BIGAMIGA_FONT,string )
+	
 	// Moved here for interp
 	fixed_t frac = R_UsingFrameInterpolation() ? renderdeltatics : FRACUNIT;
 	
-	if (bottomtext_x < -(V_LSTitleLowStringWidth(SkidrowBottomText[skidrow.bottomtext_line].c_str(), V_MONOSPACE) << FRACBITS))
+	if (bottomtext_x < -(V_BigAmigaStringWidth(SkidrowBottomText[skidrow.bottomtext_line].c_str(), V_MONOSPACE) << FRACBITS))
 	{
 		bottomtext_x = BASEVIDWIDTH << FRACBITS;
 		// wrap
@@ -290,8 +236,17 @@ static void M_DrawSkidrow(void)
 	{
 		bottomtext_x -= 6 * frac; // fast
 	}
+	
+#undef V_BigAmigaStringWidth
+	
+#define V_DrawBigAmigaString( x,y,option,string ) \
+	V__DrawOneScaleString (x,y,FRACUNIT,option,NULL,BIGAMIGA_FONT,string)
 
-	V_DrawLSTitleLowString(bottomtext_x >> FRACBITS, BASEVIDHEIGHT/2 - 15, V_SINESCROLL|V_MONOSPACE, SkidrowBottomText[skidrow.bottomtext_line].c_str());
+	V_SetAmigaEffect(ANG2, 4, 70);
+	V_DrawBigAmigaString(bottomtext_x, (BASEVIDHEIGHT/2 - 15) << FRACBITS, V_MONOSPACE, SkidrowBottomText[skidrow.bottomtext_line].c_str());
+	V_ClearAmigaEffect();
+	
+#undef V_DrawBigAmigaString
 	
 	// center
 	int centerx = (BASEVIDHEIGHT/2)-(skidrow_length*10)/2;

@@ -367,6 +367,10 @@ void HU_Init(void)
 			ADIM (SKIDROW);
 			PR   ("SKRFU");
 			REG;
+			
+			ADIM (BIGAMIGA);
+			PR   ("AMBP");
+			REG;
 		}
 
 #undef  REG

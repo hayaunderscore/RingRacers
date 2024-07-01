@@ -184,8 +184,6 @@ void V_CubeApply(RGBA_t *input);
 #define V_NOSCALESTART       0x40000000 // don't scale x, y, start coords
 #define V_SPLITSCREEN        0x80000000 // Add half of screen width or height automatically depending on player number
 
-#define V_SINESCROLL         0xA0000000 // (strings/patches) Amiga sinescroll
-
 UINT32 V_GetHUDTranslucency(INT32 scrn);
 
 void V_AdjustXYWithSnap(INT32 *x, INT32 *y, UINT32 options, INT32 dupx, INT32 dupy);
@@ -202,6 +200,23 @@ void V_SetClipRect(fixed_t x, fixed_t y, fixed_t w, fixed_t h, INT32 flags);
 void V_ClearClipRect(void);
 void V_SaveClipRect(cliprect_t *copy);
 void V_RestoreClipRect(const cliprect_t *copy);
+
+// SINESCROLL
+struct sinescroll_t
+{
+	angle_t angle;
+	INT32 countermul;
+	INT32 mul;
+	INT32 counter;
+	boolean enabled;
+};
+
+sinescroll_t *V_GetAmigaEffect(void);
+void V_SetAmigaEffect(angle_t angle, INT32 countermul, INT32 multiplier);
+void V_ClearAmigaEffect(void);
+void V_ResetAmigaCounter(void);
+void V_SaveAmigaEffect(sinescroll_t *copy);
+void V_RestoreAmigaEffect(const sinescroll_t *copy);
 
 // defines for old functions
 #define V_DrawPatch(x,y,s,p) V_DrawFixedPatch((x)<<FRACBITS, (y)<<FRACBITS, FRACUNIT, s|V_NOSCALESTART|V_NOSCALEPATCH, p, NULL)
@@ -383,6 +398,9 @@ void V_DrawProfileNum(INT32 x, INT32 y, INT32 flags, UINT8 num);
 
 #define V_CreditStringWidth( string ) \
 	V__IntegerStringWidth ( FRACUNIT,0,CRED_FONT,string )
+	
+#define V_CreditStringWidthOption( string,option ) \
+	V__IntegerStringWidth ( FRACUNIT,option,CRED_FONT,string )
 
 // SRB2Kart
 #define V_DrawTimerString( x,y,option,string ) \

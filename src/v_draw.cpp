@@ -329,6 +329,11 @@ int Draw::font_to_fontno(Font font)
 		if (noire_smfont)
 			return SKIDROW_FONT;
 		return MED_FONT;
+		
+	case Font::kUgly: // sneaky....
+		if (noire_smfont)
+			return BIGAMIGA_FONT;
+		return CRED_FONT;
 	}
 
 	return TINY_FONT;
