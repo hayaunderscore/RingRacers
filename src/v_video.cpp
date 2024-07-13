@@ -3647,7 +3647,8 @@ void VID_DisplaySoftwareScreen()
 					postimgtype[i] == postimg_water && !cv_reducevfx.value,
 					postimgtype[i] == postimg_heat && !cv_reducevfx.value,
 					postimgtype[i] == postimg_flip,
-					postimgtype[i] == postimg_mirror
+					postimgtype[i] == postimg_mirror,
+					postimgtype[i] == postimg_flipmirror
 				}
 			}
 		);
