@@ -518,6 +518,9 @@ consvar_t cv_darkitembox = Player("darkitembox", "On").on_off();
 
 consvar_t cv_colorizedhudcolor = Player("colorizedhudcolor", "Skin Color").values(HudColor_cons_t);
 
+consvar_t cv_oldinputdisplay = Player("oldinputdisplay", "On").on_off();
+consvar_t cv_oldpositiondisplay = Player("oldpositiondisplay", "On").on_off();
+
 // HEP2 cvars....
 // Should probably make this profile specific...
 consvar_t cv_saltyhop = Player("saltyhop", "Off").on_off();
