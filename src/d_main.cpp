@@ -1483,6 +1483,9 @@ static void Command_crash(void)
 //
 // D_SRB2Main
 //
+//
+// D_SRB2Main
+//
 void D_SRB2Main(void)
 {
 	INT32 i, j, p;
@@ -1780,7 +1783,7 @@ void D_SRB2Main(void)
 	{
 		clr_hud = true;
 	}
-	
+
 	// TODO possibly check if font is completely valid
 	if (W_CheckMultipleLumps("SKRFU033", NULL))
 		noire_smfont = true;
@@ -1800,17 +1803,6 @@ void D_SRB2Main(void)
 	basenumkartcupheaders = numkartcupheaders;
 
 	CON_SetLoadingProgress(LOADED_IWAD);
-
-	CONS_Printf("W_InitMultipleFiles(): Adding external PWADs.\n");
-	W_InitMultipleFiles(startuppwads, true);
-	D_CleanFile(startuppwads);
-
-	//
-	// search for pwad maps
-	//
-	P_InitMapData();
-
-	CON_SetLoadingProgress(LOADED_PWAD);
 
 	M_PasswordInit();
 
@@ -1852,11 +1844,11 @@ void D_SRB2Main(void)
 	S_RegisterSoundStuff();
 
 	I_RegisterSysCommands();
-	
+
 	CON_SetLoadingProgress(LOADED_HUINIT);
-	
+
 	CONS_Printf("W_InitMultipleFiles(): Adding external PWADs.\n");
-	
+
 	// HACK: Refer to https://git.do.srb2.org/KartKrew/RingRacers/-/merge_requests/29#note_61574
 	partadd_earliestfile = numwadfiles;
 	W_InitMultipleFiles(startuppwads, true);
@@ -1870,7 +1862,7 @@ void D_SRB2Main(void)
 		P_InitMapData();
 		HU_LoadGraphics();
 	}
-	
+
 	D_CleanFile(startuppwads);
 	partadd_earliestfile = UINT16_MAX;
 
@@ -2317,7 +2309,7 @@ void D_SRB2Main(void)
 			D_MapChange(pstartmap, gametype, (cv_kartencore.value == 1), true, 0, false, false);
 		}
 	}
-	else if (true) //(M_CheckParm("-skipintro"))
+	else if (M_CheckParm("-skipintro"))
 	{
 		F_StartTitleScreen();
 		CV_StealthSetValue(&cv_currprofile, -1);

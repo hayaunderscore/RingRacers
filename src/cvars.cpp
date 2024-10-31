@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // DR. ROBOTNIK'S RING RACERS
 //-----------------------------------------------------------------------------
 // Copyright (C) 2024 by James Robert Roman
@@ -437,6 +438,9 @@ consvar_t cv_bgaudio = Player("bgaudio", "Nothing").onchange_noinit(BGAudio_OnCh
 	{2, "Sounds"},
 	{3, "Music&Sounds"},
 });
+
+consvar_t cv_localskin = Player("internal___localskin", "None").dont_save().flags(CV_HIDDEN);
+consvar_t cv_fakelocalskin = Player("localskin", "None").flags(CV_SAVE);
 
 // Pause game upon window losing focus
 consvar_t cv_pauseifunfocused = Player("pauseifunfocused", "Yes").yes_no();
