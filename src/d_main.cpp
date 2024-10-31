@@ -1404,6 +1404,7 @@ static void IdentifyVersion(void)
 #ifdef USE_PATCH_FILE
 	D_AddFile(startupiwads, va(pandf,srb2waddir,"patch.pk3"));
 #endif
+	D_AddFile(startupiwads, va(pandf,srb2waddir,"luigibudd.pk3"));
 
 	// completely optional
 	if (FIL_ReadFileOK(va(pandf,srb2waddir,"noire.pk3"))) {
@@ -1800,6 +1801,17 @@ void D_SRB2Main(void)
 
 	CON_SetLoadingProgress(LOADED_IWAD);
 
+	CONS_Printf("W_InitMultipleFiles(): Adding external PWADs.\n");
+	W_InitMultipleFiles(startuppwads, true);
+	D_CleanFile(startuppwads);
+
+	//
+	// search for pwad maps
+	//
+	P_InitMapData();
+
+	CON_SetLoadingProgress(LOADED_PWAD);
+
 	M_PasswordInit();
 
 	//---------------------------------------------------- READY SCREEN
@@ -1831,6 +1843,8 @@ void D_SRB2Main(void)
 	HU_Init();
 
 	CON_Init();
+
+	CON_SetLoadingProgress(LOADED_HUINIT);
 
 	D_RegisterServerCommands();
 	D_RegisterClientCommands(); // be sure that this is called before D_CheckNetGame
@@ -2303,7 +2317,7 @@ void D_SRB2Main(void)
 			D_MapChange(pstartmap, gametype, (cv_kartencore.value == 1), true, 0, false, false);
 		}
 	}
-	else if (M_CheckParm("-skipintro"))
+	else if (true) //(M_CheckParm("-skipintro"))
 	{
 		F_StartTitleScreen();
 		CV_StealthSetValue(&cv_currprofile, -1);

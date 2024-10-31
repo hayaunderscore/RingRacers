@@ -2734,19 +2734,24 @@ static void K_RegularVoiceTimers(player_t *player)
 
 static UINT8 K_ObjectToSkinIDForSounds(mobj_t *source)
 {
+	
 	if (source->player)
-		return source->player->skin;
+		return (source->player->localskin) ? source->player->localskin - 1 : source->player->skin;
 
 	if (!source->skin)
 		return MAXSKINS;
 
-	return ((skin_t *)source->skin)-skins;
+	return ((skin_t *)((source->localskin) ? source->localskin : source->skin))-((source->localskin) ? localskins : skins);
 }
 
 static void K_PlayGenericTastefulTaunt(mobj_t *source, sfxenum_t sfx_id)
 {
 	UINT8 skinid = K_ObjectToSkinIDForSounds(source);
-	if (skinid >= numskins)
+	INT32 mynumskins = numskins;
+	if (source->localskin && (source->player && source->player->skinlocal))
+		mynumskins = numlocalskins;
+
+	if (skinid >= mynumskins)
 		return;
 
 	boolean tasteful = (!source->player || !source->player->karthud[khud_tauntvoices]);
@@ -2785,7 +2790,11 @@ void K_PlayBoostTaunt(mobj_t *source)
 void K_PlayOvertakeSound(mobj_t *source)
 {
 	UINT8 skinid = K_ObjectToSkinIDForSounds(source);
-	if (skinid >= numskins)
+	INT32 mynumskins = numskins;
+	if (source->localskin && (source->player && source->player->skinlocal))
+		mynumskins = numlocalskins;
+
+	if (skinid >= mynumskins)
 		return;
 
 	boolean tasteful = (!source->player || !source->player->karthud[khud_voices]);
@@ -2810,7 +2819,11 @@ void K_PlayOvertakeSound(mobj_t *source)
 static void K_PlayGenericCombatSound(mobj_t *source, mobj_t *other, sfxenum_t sfx_id)
 {
 	UINT8 skinid = K_ObjectToSkinIDForSounds(source);
-	if (skinid >= numskins)
+	INT32 mynumskins = numskins;
+	if (source->localskin && (source->player && source->player->skinlocal))
+		mynumskins = numlocalskins;
+
+	if (skinid >= mynumskins)
 		return;
 
 	boolean alwaysHear = false;
@@ -2827,7 +2840,7 @@ static void K_PlayGenericCombatSound(mobj_t *source, mobj_t *other, sfxenum_t sf
 	{
 		S_StartSound(
 			alwaysHear ? NULL : source,
-			skins[skinid].soundsid[S_sfx[sfx_id].skinsound]
+			((source->player && source->player->skinlocal) ? localskins : skins)[skinid].soundsid[S_sfx[sfx_id].skinsound]
 		);
 	}
 
@@ -2880,7 +2893,11 @@ void K_TryHurtSoundExchange(mobj_t *victim, mobj_t *attacker)
 void K_PlayPowerGloatSound(mobj_t *source)
 {
 	UINT8 skinid = K_ObjectToSkinIDForSounds(source);
-	if (skinid >= numskins)
+	INT32 mynumskins = numskins;
+	if (source->localskin && (source->player && source->player->skinlocal))
+		mynumskins = numlocalskins;
+
+	if (skinid >= mynumskins)
 		return;
 
 	if (
@@ -2898,7 +2915,11 @@ void K_PlayPowerGloatSound(mobj_t *source)
 void P_PlayVictorySound(mobj_t *source)
 {
 	UINT8 skinid = K_ObjectToSkinIDForSounds(source);
-	if (skinid >= numskins)
+	INT32 mynumskins = numskins;
+	if (source->localskin && (source->player && source->player->skinlocal))
+		mynumskins = numlocalskins;
+
+	if (skinid >= mynumskins)
 		return;
 
 	if (
