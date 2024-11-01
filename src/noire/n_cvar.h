@@ -22,6 +22,8 @@ extern consvar_t cv_darkitembox;
 extern consvar_t cv_colorizedhudcolor;
 extern consvar_t cv_oldinputdisplay;
 extern consvar_t cv_oldpositiondisplay;
+extern consvar_t cv_extendedspeedometer;
+extern consvar_t cv_highresportrait;
 
 void ColorHUD_OnChange(void);
 
