@@ -2556,7 +2556,19 @@ void PositionFacesInfo::draw_1p()
 			else
 				colormap = R_GetTranslationColormap(workingskin, static_cast<skincolornum_t>(players[rankplayer[i]].mo->color), GTC_CACHE);
 
-			V_DrawMappedPatch(FACE_X + xoff, Y + yoff, V_HUDTRANS|V_SLIDEIN|V_SNAPTOLEFT|flipflag, faceprefix[workingskin][FACE_RANK], colormap);
+			//hires ranking portraits
+
+			if (cv_highresportrait.value)
+			{
+				V_DrawFixedPatch((FACE_X + xoff)<<FRACBITS, (Y + yoff)<<FRACBITS, FRACUNIT >> 1,
+					V_HUDTRANS|V_SLIDEIN|V_SNAPTOLEFT|flipflag,
+					faceprefix[workingskin][FACE_WANTED], colormap
+				);
+			}
+			else
+			{
+				V_DrawMappedPatch(FACE_X + xoff, Y + yoff, V_HUDTRANS|V_SLIDEIN|V_SNAPTOLEFT|flipflag, faceprefix[workingskin][FACE_RANK], colormap);
+			}
 
 			if (LUA_HudEnabled(hud_battlebumpers))
 			{
