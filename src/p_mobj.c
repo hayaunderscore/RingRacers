@@ -3766,11 +3766,7 @@ void P_CalcChasePostImg(player_t *player, camera_t *thiscam)
 		}
 	}
 
-	if (player->mo->eflags & MFE_VERTICALFLIP && cv_flipcam.value)
-	{
-		postimg = postimg_flip;
-	}	
-	else if (encoremode)
+	if (encoremode)
 	{
 		postimg = postimg_mirror;
 		if (flipcam) // We have flipcam so do that

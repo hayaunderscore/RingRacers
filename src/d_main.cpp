@@ -1405,7 +1405,6 @@ static void IdentifyVersion(void)
 #ifdef USE_PATCH_FILE
 	D_AddFile(startupiwads, va(pandf,srb2waddir,"patch.pk3"));
 #endif
-	D_AddFile(startupiwads, va(pandf,srb2waddir,"luigibudd.pk3"));
 
 	// completely optional
 	if (FIL_ReadFileOK(va(pandf,srb2waddir,"noire.pk3"))) {
@@ -1789,7 +1788,7 @@ void D_SRB2Main(void)
 	if (W_CheckMultipleLumps("SKRFU033", NULL))
 		noire_smfont = true;
 
-	if (W_CheckMultipleLumps("A11YFLPC", "A11YOLDT", NULL))
+	if (W_CheckMultipleLumps("A11YFLPC", NULL))
 		noire_ascicons = true;
 
 	// Load credits_def lump
@@ -1839,8 +1838,6 @@ void D_SRB2Main(void)
 	HU_Init();
 
 	CON_Init();
-
-	CON_SetLoadingProgress(LOADED_HUINIT);
 
 	D_RegisterServerCommands();
 	D_RegisterClientCommands(); // be sure that this is called before D_CheckNetGame

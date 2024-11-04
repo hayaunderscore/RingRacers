@@ -3208,11 +3208,11 @@ static void K_drawRingCounter(boolean gametypeinfoshown)
 			UINT8 *colormap = R_GetTranslationColormap(TC_DEFAULT, static_cast<skincolornum_t>(K_GetHudColor()), GTC_CACHE);
 			if (cv_highresportrait.value)
 			{
-				V_DrawFixedPatch((LAPS_X+rco+46)<<FRACBITS, (fy-5)<<FRACBITS, FRACUNIT >> 1, V_HUDTRANS|V_SLIDEIN|splitflags, (stplyr->skinlocal ? localfaceprefix[stplyr->localskin-1] : faceprefix[stplyr->localskin ? stplyr->localskin-1 : stplyr->skin])[FACE_WANTED], colormap);
+				V_DrawFixedPatch((LAPS_X+46)<<FRACBITS, (fy-5)<<FRACBITS, FRACUNIT >> 1, V_HUDTRANS|V_SLIDEIN|splitflags, (stplyr->skinlocal ? localfaceprefix[stplyr->localskin-1] : faceprefix[stplyr->localskin ? stplyr->localskin-1 : stplyr->skin])[FACE_WANTED], colormap);
 			}
 			else
 			{
-				V_DrawMappedPatch(LAPS_X+rco+46, fy-5, V_HUDTRANS|V_SLIDEIN|splitflags, (stplyr->skinlocal ? localfaceprefix[stplyr->localskin-1] : faceprefix[stplyr->localskin ? stplyr->localskin-1 : stplyr->skin])[FACE_RANK], colormap);
+				V_DrawMappedPatch(LAPS_X+46, fy-5, V_HUDTRANS|V_SLIDEIN|splitflags, (stplyr->skinlocal ? localfaceprefix[stplyr->localskin-1] : faceprefix[stplyr->localskin ? stplyr->localskin-1 : stplyr->skin])[FACE_RANK], colormap);
 			}
 			SINT8 livescount = 0;
 			if (stplyr->lives > 0)
