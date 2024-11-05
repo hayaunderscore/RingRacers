@@ -57,6 +57,9 @@
 // HEP2
 #include "hep2/h_cvars.h"
 
+// HEP2
+#include "hep2/h_cvars.h"
+
 actioncache_t actioncachehead;
 
 static mobj_t *overlaycap = NULL;
